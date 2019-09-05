@@ -1,0 +1,19 @@
+File
+Open Image
+Save
+Save As
+Close
+Exit
+Mark Table
+Mark Row/Cols
+Mark Row/COl Span
+Evaluate Initial Cells
+Zoom Out
+Zoom In
+Original Size
+Edit
+Undo
+Redo
+View
+Save Ground Truth
+Open Ground Truth
