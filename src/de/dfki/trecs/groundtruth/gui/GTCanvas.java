@@ -222,12 +222,15 @@ public class GTCanvas extends Canvas implements MouseMotionListener,MouseListene
 //					int tmpX2 = (int) ((x2-x1)*state.getZoomFactorX());
 //					int tmpY2 = (int) ((y2-y1)*state.getZoomFactorY());
 //					g.fillRect(tmpX,tmpY,tmpX2-tmpX,tmpY2-tmpY);
-					paintRectangleBoundary(x0,y0,x2,y2,g);
+					paintRectangleBoundary(
+							Math.min(x0, x2),
+							Math.min(y0, y2),
+							Math.max(x0, x2),
+							Math.max(y0, y2),g);
 					//g.fillRect(x0, y0, x2-x0, y2-y0);
 				}
 				break;
 			case CanvasState.MARK_ROW_COL_SPAN:
-//				
 				GTTable table = state.getCurrentTable();
 				if (table == null)
 					break;
@@ -235,17 +238,17 @@ public class GTCanvas extends Canvas implements MouseMotionListener,MouseListene
 				Point p2 = translateToScreenPoint(new Point(table.getX1(),table.getY1()));
 				if (p1 == null || p2 == null)
 					break;
-				if (x2 > p2.x )
-				{
+				if (x2 > p2.x)
 					x2 = p2.x;
-				
-				}
 				if (y2 > p2.y)
-					y2 = p2.y;	
-				
-					g.setColor(Color.BLACK);
-					g.drawLine(x0, y0, x2, y2);
-//				}
+					y2 = p2.y;
+			
+				g.setColor(Color.BLACK);
+				g.drawLine(
+						Math.min(x0, x2),
+						Math.min(y0, y2),
+						Math.max(x0, x2),
+						Math.max(y0, y2));
 				break;
 			}
 			
@@ -437,8 +440,7 @@ public class GTCanvas extends Canvas implements MouseMotionListener,MouseListene
 	}
 	@Override
 	public void mouseDragged(MouseEvent e) {
-		
-	
+
 		Graphics g = getGraphics();
 		
 		switch(state.getMarkType()){
@@ -453,16 +455,11 @@ public class GTCanvas extends Canvas implements MouseMotionListener,MouseListene
 			y2 = y0;
 			break;
 		case CanvasState.MARK_ROW_COL_SPAN:
-			if (x2==x0){
-				
+			if (state.getPressedButton() == MouseEvent.BUTTON1){
 				y2 = e.getY();
-				
-				}
-			else if (y2==y0){
-				//g.setColor(Color.pink);
-				
+			}
+			else if (state.getPressedButton() == MouseEvent.BUTTON3){
 				x2 = e.getX();
-				
 			}
 			
 			drawInteractiveLine(false);
@@ -647,14 +644,24 @@ public class GTCanvas extends Canvas implements MouseMotionListener,MouseListene
 						state.setDrawing(true);
 					if (e.getButton() == e.BUTTON1){
 						x2 = x0;
-					
-						
+						state.setPressedButton(e.BUTTON1);				
 						}
 					else if (e.getButton() == e.BUTTON3){
 						//g.setColor(Color.pink);
 						y2 = y0;
-						
+						state.setPressedButton(e.BUTTON3);				
 					}
+					}
+					else {
+						Point p = translateToImagePoint(new Point(e.getX(),e.getY()));
+						GTTable temp = state.getTable(p.x, p.y);
+						if (temp!=null){
+							state.setCurrentTable(temp);
+						}
+						else {
+							state.setCurrentTable(null);
+						}
+						repaint();
 					}
 					
 				
@@ -689,7 +696,7 @@ public class GTCanvas extends Canvas implements MouseMotionListener,MouseListene
 			switch(state.getMarkType()){
 			case CanvasState.MARK_TABLE:
 				state.setDrawing(false);
-			if (x2>x0 && y2 > y0)
+			if (x2 != x0 && y2 != y0)
 			{
 				x2 = e.getX();
 				y2 = e.getY();
@@ -697,26 +704,27 @@ public class GTCanvas extends Canvas implements MouseMotionListener,MouseListene
 					x2 = imageX+scaledWidth;
 				if (y2 > imageY+scaledHeight)
 					y2 = imageY+scaledHeight;
-				Point p1 = translateToImagePoint(new Point(x0,y0));
-				Point p2 = translateToImagePoint(new Point(x2,y2));
+				Point p1 = translateToImagePoint(new Point(Math.min(x0, x2), Math.min(y0, y2)));
+				Point p2 = translateToImagePoint(new Point(Math.max(x0, x2), Math.max(y0, y2)));
 				clearInteractiveDrawingLoc();
 				GTTable table = new GTTable(p1.x,p1.y,p2.x,p2.y);
 				state.addGTTable(table);
 			}
 			break;
 			case CanvasState.MARK_ROW_COL_SPAN:
-			
+
+				state.setDrawing(false);
 //				x2 = e.getX();
 //				y2 = e.getY();
 				if (state.getCurrentTable() == null)
 					return;
-				Point p1 = translateToImagePoint(new Point(x0,y0));
-				Point p2 = translateToImagePoint(new Point(x2,y2));
+				Point p1 = translateToImagePoint(new Point(Math.min(x0, x2), Math.min(y0, y2)));
+				Point p2 = translateToImagePoint(new Point(Math.max(x0, x2), Math.max(y0, y2)));
 				if (p1 == null || p2 == null)
 					return;
-				if (x0 == x2)
+				if (state.getPressedButton() == MouseEvent.BUTTON1)
 					state.getCurrentTable().addColSpan(p1, p2);
-				else if (y0 == y2)
+				else if (state.getPressedButton() == MouseEvent.BUTTON3)
 					state.getCurrentTable().addRowSpan(p1, p2);
 					
 				Point p = translateToScreenPoint(new Point(state.getCurrentTable().getX0(),state.getCurrentTable().getY0()));
