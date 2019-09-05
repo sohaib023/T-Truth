@@ -534,7 +534,8 @@ public class CanvasState implements MenuIndexConstants {
 					
 				}
 			}
-			table.populateCellMatrix();
+			if(table.getCells().size() > 0)
+				table.populateCellMatrix();
 			list.add(table);
 
 		}
