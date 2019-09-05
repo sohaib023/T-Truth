@@ -111,6 +111,7 @@ public class CanvasState implements MenuIndexConstants {
 	private boolean drawing;
 	private GTTable currentTable = null;
 	private boolean initialCellsMarked = false;
+	private int pressedButton = -1;
 	
 	private int markType = MARK_NONE;
 
@@ -303,6 +304,13 @@ public class CanvasState implements MenuIndexConstants {
 		return markType;
 	}
 
+	/**
+	 * @return the pressed button
+	 */
+	public int getPressedButton() {
+		return pressedButton;
+	}
+	
 	/**
 	 * Returns the current modified state (true if image was modified and not
 	 * saved after modification, false otherwise).
@@ -757,6 +765,14 @@ public class CanvasState implements MenuIndexConstants {
 	 */
 	public void setMarkType(int markType) {
 		this.markType = markType;
+	}
+
+	/**
+	 * @param markType
+	 *            the markType to set
+	 */
+	public void setPressedButton(int button) {
+		this.pressedButton = button;
 	}
 
 	/**
