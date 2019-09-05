@@ -66,19 +66,19 @@ public class CanvasState implements MenuIndexConstants {
 	/**
 	 * All allowed zoom levels, as percentage values in ascending order.
 	 */
-	public static final int[] ZOOM_LEVELS = { 5, 7, 10, 15, 20, 30, 50, 70,
-			100, 150, 200, 300, 500, 700, 1000, 2000, 3000, 5000 };
+	public static final int[] ZOOM_LEVELS = { 5, 7, 10, 15, 20, 30, 50, 70, 100, 150, 200, 300, 500, 700, 1000, 2000,
+			3000, 5000 };
 
 	/**
-	 * The index into the {@link #ZOOM_LEVELS} array that holds the original
-	 * size zoom level (100 percent). So, ZOOM_LEVELS[ORIGINAL_SIZE_ZOOM_INDEX]
-	 * must be equal to 100.
+	 * The index into the {@link #ZOOM_LEVELS} array that holds the original size
+	 * zoom level (100 percent). So, ZOOM_LEVELS[ORIGINAL_SIZE_ZOOM_INDEX] must be
+	 * equal to 100.
 	 */
 	public static final int ORIGINAL_SIZE_ZOOM_INDEX = 8;
 
 	/**
-	 * Integer constant for <em>nearest neighbor interpolation</em>. A fast but
-	 * ugly method.
+	 * Integer constant for <em>nearest neighbor interpolation</em>. A fast but ugly
+	 * method.
 	 */
 	public static final int INTERPOLATION_NEAREST_NEIGHBOR = 0;
 
@@ -89,14 +89,13 @@ public class CanvasState implements MenuIndexConstants {
 	public static final int INTERPOLATION_BILINEAR = 1;
 
 	/**
-	 * Integer constant for <em>bicubic interpolation</em>. A very slow method,
-	 * but with the nicest output of the three supported interpolation types.
+	 * Integer constant for <em>bicubic interpolation</em>. A very slow method, but
+	 * with the nicest output of the three supported interpolation types.
 	 */
 	public static final int INTERPOLATION_BICUBIC = 2;
 
 	/**
-	 * The default interpolation type, one of the three INTERPOLATION_xyz
-	 * constants.
+	 * The default interpolation type, one of the three INTERPOLATION_xyz constants.
 	 */
 	public static final int DEFAULT_INTERPOLATION = INTERPOLATION_NEAREST_NEIGHBOR;
 	private String currentDirectory;
@@ -112,7 +111,7 @@ public class CanvasState implements MenuIndexConstants {
 	private GTTable currentTable = null;
 	private boolean initialCellsMarked = false;
 	private int pressedButton = -1;
-	
+
 	private int markType = MARK_NONE;
 
 	private Stack<GTElement> undoStack = new Stack<GTElement>();
@@ -132,8 +131,9 @@ public class CanvasState implements MenuIndexConstants {
 	private double zoomFactorX;
 	private double zoomFactorY;
 	private boolean zoomToFit;
-	
+
 	private boolean autoLoadGT = false;
+
 	/**
 	 * @param zoomToFit the zoomToFit to set
 	 */
@@ -142,10 +142,10 @@ public class CanvasState implements MenuIndexConstants {
 	}
 
 	private String groundTruthFile;
-	
+
 	/**
-	 * Create new EditorState object and initialize its private fields to
-	 * default values.
+	 * Create new EditorState object and initialize its private fields to default
+	 * values.
 	 */
 	public CanvasState() {
 		locale = Locale.getDefault();
@@ -162,15 +162,17 @@ public class CanvasState implements MenuIndexConstants {
 		zoomToFit = false;
 		interpolation = 0;
 	}
-	public void clear(){
-		if (currentImage!=null){
+
+	public void clear() {
+		if (currentImage != null) {
 			currentImage = null;
 		}
 		clearList();
 		clearData();
-		
+
 	}
-	private void clearList(){
+
+	private void clearList() {
 		undoStack.clear();
 		redoStack.clear();
 		list.clear();
@@ -178,42 +180,44 @@ public class CanvasState implements MenuIndexConstants {
 		currentElement = null;
 		setGroundTruthFile(null);
 		modified = false;
-		
+
 	}
-	private void clearData(){
-		
+
+	private void clearData() {
+
 		zoomToFit = false;
 		setZoomFactors(1.0, 1.0);
 		interpolation = 0;
-	
-		//currentDirectory = null;
+
+		// currentDirectory = null;
 		fileName = null;
 		drawing = false;
-		
+
 		rgb48Image = null;
 		markType = CanvasState.MARK_NONE;
 		initialCellsMarked = false;
-		
+
 	}
-	private void addGroundTruthCoordinates(XMLManager xmlManager, Node node,
-			BoundingBox box) {
+
+	private void addGroundTruthCoordinates(XMLManager xmlManager, Node node, BoundingBox box) {
 		xmlManager.addAttribue((Element) node, "x0", "" + box.getX0());
 		xmlManager.addAttribue((Element) node, "y0", "" + box.getY0());
 		xmlManager.addAttribue((Element) node, "x1", "" + box.getX1());
 		xmlManager.addAttribue((Element) node, "y1", "" + box.getY1());
 
 	}
-	public void updateModifiedFlag(){
-		if (undoStack.size()>0){
+
+	public void updateModifiedFlag() {
+		if (undoStack.size() > 0) {
 			modified = true;
-		}
-		else if (undoStack.size() == 0)
+		} else if (undoStack.size() == 0)
 			modified = false;
 	}
+
 	public void addGTCol(GTCol col) {
 		currentTable.addCols(col);
 		col.setTable(currentTable);
-		//System.out.println("Column added" + col);
+		// System.out.println("Column added" + col);
 		addUndoElement(col);
 	}
 
@@ -240,8 +244,8 @@ public class CanvasState implements MenuIndexConstants {
 	}
 
 	/**
-	 * Returns the current directory. This directory will be used when file
-	 * dialogs are opened.
+	 * Returns the current directory. This directory will be used when file dialogs
+	 * are opened.
 	 */
 	public String getCurrentDirectory() {
 		return currentDirectory;
@@ -310,10 +314,10 @@ public class CanvasState implements MenuIndexConstants {
 	public int getPressedButton() {
 		return pressedButton;
 	}
-	
+
 	/**
-	 * Returns the current modified state (true if image was modified and not
-	 * saved after modification, false otherwise).
+	 * Returns the current modified state (true if image was modified and not saved
+	 * after modification, false otherwise).
 	 */
 	public boolean getModified() {
 		return modified;
@@ -328,8 +332,7 @@ public class CanvasState implements MenuIndexConstants {
 
 	public GTTable getTable(int x0, int y0) {
 		for (GTTable table : list) {
-			if (x0 >= table.getX0() && y0 >= table.getY0()
-					&& x0 <= table.getX1() && y0 <= table.getY1())
+			if (x0 >= table.getX0() && y0 >= table.getY0() && x0 <= table.getX1() && y0 <= table.getY1())
 				return table;
 		}
 		return null;
@@ -343,10 +346,10 @@ public class CanvasState implements MenuIndexConstants {
 	}
 
 	/**
-	 * Returns the current zoom factor in horizontal direction. The value 1.0
-	 * means that the image is displayed at its original size. Anything smaller
-	 * means that the image is scaled down, anything larger means that the image
-	 * is scaled up. The value must not be smaller than or equal to 0.0.
+	 * Returns the current zoom factor in horizontal direction. The value 1.0 means
+	 * that the image is displayed at its original size. Anything smaller means that
+	 * the image is scaled down, anything larger means that the image is scaled up.
+	 * The value must not be smaller than or equal to 0.0.
 	 * 
 	 * @return zoom factor in horizontal direction
 	 * @see #getZoomFactorY
@@ -356,10 +359,10 @@ public class CanvasState implements MenuIndexConstants {
 	}
 
 	/**
-	 * Returns the current zoom factor in vertical direction. The value 1.0
-	 * means that the image is displayed at its original size. Anything smaller
-	 * means that the image is scaled down, anything larger means that the image
-	 * is scaled up. The value must not be smaller than or equal to 0.0.
+	 * Returns the current zoom factor in vertical direction. The value 1.0 means
+	 * that the image is displayed at its original size. Anything smaller means that
+	 * the image is scaled down, anything larger means that the image is scaled up.
+	 * The value must not be smaller than or equal to 0.0.
 	 * 
 	 * @return zoom factor in vertical direction
 	 * @see #getZoomFactorX
@@ -369,9 +372,8 @@ public class CanvasState implements MenuIndexConstants {
 	}
 
 	/**
-	 * Returns if image display is currently set to &quot;zoom to fit&quot; Zoom
-	 * to fit means that the image is always zoomed to fit exactly into the
-	 * window.
+	 * Returns if image display is currently set to &quot;zoom to fit&quot; Zoom to
+	 * fit means that the image is always zoomed to fit exactly into the window.
 	 */
 	public boolean getZoomToFit() {
 		return zoomToFit;
@@ -404,24 +406,28 @@ public class CanvasState implements MenuIndexConstants {
 	public boolean isAutoLoadGT() {
 		return autoLoadGT;
 	}
+
 	/**
 	 * @param autoLoadGT the autoLoadGT to set
 	 */
 	public void setAutoLoadGT(boolean autoLoadGT) {
 		this.autoLoadGT = autoLoadGT;
 	}
+
 	/**
 	 * @return the groundTruthFile
 	 */
 	public String getGroundTruthFile() {
 		return groundTruthFile;
 	}
+
 	/**
 	 * @param groundTruthFile the groundTruthFile to set
 	 */
 	public void setGroundTruthFile(String groundTruthFile) {
 		this.groundTruthFile = groundTruthFile;
 	}
+
 	/**
 	 * Returns if the image is displayed at minimum zoom level.
 	 */
@@ -430,40 +436,38 @@ public class CanvasState implements MenuIndexConstants {
 	}
 
 	/**
-	 * Returns if the current zoom level is set to original size (each image
-	 * pixel is displayed as one pixel).
+	 * Returns if the current zoom level is set to original size (each image pixel
+	 * is displayed as one pixel).
 	 */
 	public boolean isZoomOriginalSize() {
 		return zoomIndex == ORIGINAL_SIZE_ZOOM_INDEX;
 	}
 
-	
-	public void promoteImage(){
-		if (currentImage!=null)
-		{
-			if (rgb48Image==null){
+	public void promoteImage() {
+		if (currentImage != null) {
+			if (rgb48Image == null) {
 				ImageToImageOperation imgOperation = new PromotionRGB48();
 				imgOperation.setInputImage(currentImage);
-				try{
-				imgOperation.process();
-				}
-				catch(Exception ex){
+				try {
+					imgOperation.process();
+				} catch (Exception ex) {
 					System.out.println("Error transforming image to 48bit");
 				}
-				rgb48Image = (MemoryRGB48Image)imgOperation.getOutputImage();
+				rgb48Image = (MemoryRGB48Image) imgOperation.getOutputImage();
 			}
 		}
 	}
-	public void evaluateTableCells(){
+
+	public void evaluateTableCells() {
 		int index = 0;
-		//promoteImage();
-		for (GTTable table:list){
+		// promoteImage();
+		for (GTTable table : list) {
 			table.setIndex(index);
 			table.evaluateInitialCells();
 			setInitialCellsMarked(true);
-		//	colorImageForeground(rgb48Image, table);
-			index ++;
-			//table.assignColors();
+			// colorImageForeground(rgb48Image, table);
+			index++;
+			// table.assignColors();
 		}
 		/**
 		 * clear the stack no undo redo after table cell evaluation
@@ -471,36 +475,38 @@ public class CanvasState implements MenuIndexConstants {
 		undoStack.clear();
 		redoStack.clear();
 	}
-	private void colorImageForeground(MemoryRGB48Image image, GTTable table){
-		
+
+	private void colorImageForeground(MemoryRGB48Image image, GTTable table) {
+
 		GTCell cells[][] = table.getGtCells();
-		for (int i=0;i<cells.length;i++){
-			for (int j=0;j<cells[i].length;j++){
-				GTCell cell = cells [i][j];
-				int R[] = new int[(cell.getWidth()*cell.getHeight())];
-				int G[] =  new int[(cell.getWidth()*cell.getHeight())];
-				int B[] =  new int[(cell.getWidth()*cell.getHeight())];
-				image.getSamples(0, cell.getX0(), cell.getY0(), cell.getWidth(), cell.getHeight(), R,0);
-				image.getSamples(1, cell.getX0(), cell.getY0(), cell.getWidth(), cell.getHeight(), G,0);
-				image.getSamples(2, cell.getX0(), cell.getY0(), cell.getWidth(), cell.getHeight(), B,0);
-				for (int r=0;r<R.length;r++){
-					if (R[r]!=0xffff)
-						R[r] =cell.getColor().getR();
-					if (G[r]!=0xffff)
+		for (int i = 0; i < cells.length; i++) {
+			for (int j = 0; j < cells[i].length; j++) {
+				GTCell cell = cells[i][j];
+				int R[] = new int[(cell.getWidth() * cell.getHeight())];
+				int G[] = new int[(cell.getWidth() * cell.getHeight())];
+				int B[] = new int[(cell.getWidth() * cell.getHeight())];
+				image.getSamples(0, cell.getX0(), cell.getY0(), cell.getWidth(), cell.getHeight(), R, 0);
+				image.getSamples(1, cell.getX0(), cell.getY0(), cell.getWidth(), cell.getHeight(), G, 0);
+				image.getSamples(2, cell.getX0(), cell.getY0(), cell.getWidth(), cell.getHeight(), B, 0);
+				for (int r = 0; r < R.length; r++) {
+					if (R[r] != 0xffff)
+						R[r] = cell.getColor().getR();
+					if (G[r] != 0xffff)
 						G[r] = cell.getColor().getG();
-					if (B[r]!=0xffff)
+					if (B[r] != 0xffff)
 						B[r] = cell.getColor().getB();
 				}
-				
-				image.putSamples(0, cell.getX0(), cell.getY0(), cell.getWidth(), cell.getHeight(), R,0);
-				image.putSamples(1, cell.getX0(), cell.getY0(), cell.getWidth(), cell.getHeight(), G,0);
-				image.putSamples(2, cell.getX0(), cell.getY0(), cell.getWidth(), cell.getHeight(), B,0);
-			
+
+				image.putSamples(0, cell.getX0(), cell.getY0(), cell.getWidth(), cell.getHeight(), R, 0);
+				image.putSamples(1, cell.getX0(), cell.getY0(), cell.getWidth(), cell.getHeight(), G, 0);
+				image.putSamples(2, cell.getX0(), cell.getY0(), cell.getWidth(), cell.getHeight(), B, 0);
+
 			}
-			
+
 		}
-		
+
 	}
+
 	public void loadGroundTruthFile(File f) {
 //		list.clear();
 //		modified = false;
@@ -508,8 +514,7 @@ public class CanvasState implements MenuIndexConstants {
 //		currentTable = null;
 		clearList();
 		XMLManager xmlManager = new XMLManager(f.getAbsolutePath(), true);
-		NodeList tablesList = xmlManager.getElementsByTagName(xmlManager
-				.getDocument(), "Table");
+		NodeList tablesList = xmlManager.getElementsByTagName(xmlManager.getDocument(), "Table");
 		for (int i = 0; i < tablesList.getLength(); i++) {
 			Node tableNode = tablesList.item(i);
 			GTTable table = new GTTable();
@@ -527,10 +532,9 @@ public class CanvasState implements MenuIndexConstants {
 					GTCol col = new GTCol();
 					loadGTElementFromNode(col, childNode);
 					table.addCols(col);
-				}
-				else if (childNode.getNodeName().equals("Cell")){
+				} else if (childNode.getNodeName().equals("Cell")) {
 					GTCell cell = new GTCell();
-					loadGTElementFromNode(cell,childNode);
+					loadGTElementFromNode(cell, childNode);
 					cell.setColor(ColorModel16Bit.parseColor(childNode.getTextContent().trim()));
 					NamedNodeMap nmmap = childNode.getAttributes();
 					cell.setStartRow(Integer.parseInt(nmmap.getNamedItem("startRow").getTextContent()));
@@ -539,10 +543,10 @@ public class CanvasState implements MenuIndexConstants {
 					cell.setEndCol(Integer.parseInt(nmmap.getNamedItem("endCol").getTextContent()));
 					cell.setDontCare(Boolean.parseBoolean(nmmap.getNamedItem("dontCare").getTextContent()));
 					table.getCells().add(cell);
-					
+
 				}
 			}
-			if(table.getCells().size() > 0)
+			if (table.getCells().size() > 0)
 				table.populateCellMatrix();
 			list.add(table);
 
@@ -551,23 +555,19 @@ public class CanvasState implements MenuIndexConstants {
 
 	private void loadGTElementFromNode(BoundingBox box, Node node) {
 		NamedNodeMap nmmap = node.getAttributes();
-		box.setX0(Integer.parseInt(nmmap.getNamedItem("x0").getTextContent()
-				.trim()));
-		box.setY0(Integer.parseInt(nmmap.getNamedItem("y0").getTextContent()
-				.trim()));
-		box.setX1(Integer.parseInt(nmmap.getNamedItem("x1").getTextContent()
-				.trim()));
-		box.setY1(Integer.parseInt(nmmap.getNamedItem("y1").getTextContent()
-				.trim()));
+		box.setX0(Integer.parseInt(nmmap.getNamedItem("x0").getTextContent().trim()));
+		box.setY0(Integer.parseInt(nmmap.getNamedItem("y0").getTextContent().trim()));
+		box.setX1(Integer.parseInt(nmmap.getNamedItem("x1").getTextContent().trim()));
+		box.setY1(Integer.parseInt(nmmap.getNamedItem("y1").getTextContent().trim()));
 
 	}
 
 	public void markRowColSpan() {
-		if (isInitialCellsMarked()){
+		if (isInitialCellsMarked()) {
 			markType = MARK_ROW_COL_SPAN;
 			currentTable = null;
 		}
-		
+
 	}
 
 	public void markRowColumns() {
@@ -611,13 +611,11 @@ public class CanvasState implements MenuIndexConstants {
 	 */
 	public void saveGroundTruthFile(File f) {
 		XMLManager xmlManager = new XMLManager("GroundTruth", false);
-		xmlManager.getDocument().getDocumentElement().setAttribute("InputFile",fileName);
-		Node tablesNode = xmlManager.createElement(xmlManager.getDocument(),
-				"Tables");
+		xmlManager.getDocument().getDocumentElement().setAttribute("InputFile", fileName);
+		Node tablesNode = xmlManager.createElement(xmlManager.getDocument(), "Tables");
 		xmlManager.getDocument().getDocumentElement().appendChild(tablesNode);
 		for (GTTable table : list) {
-			Node tableNode = xmlManager.createElement(xmlManager.getDocument(),
-					"Table");
+			Node tableNode = xmlManager.createElement(xmlManager.getDocument(), "Table");
 			addGroundTruthCoordinates(xmlManager, tableNode, table);
 			tablesNode.appendChild(tableNode);
 			// Node rowsNode =
@@ -625,8 +623,7 @@ public class CanvasState implements MenuIndexConstants {
 			// tableNode.appendChild(rowsNode);
 			ArrayList<GTRow> rows = table.getGtRows();
 			for (GTRow row : rows) {
-				Node rowNode = xmlManager.createElement(xmlManager
-						.getDocument(), "Row");
+				Node rowNode = xmlManager.createElement(xmlManager.getDocument(), "Row");
 				addGroundTruthCoordinates(xmlManager, rowNode, row);
 				tableNode.appendChild(rowNode);
 			}
@@ -635,25 +632,25 @@ public class CanvasState implements MenuIndexConstants {
 			// tableNode.appendChild(colsNode);
 			ArrayList<GTCol> cols = table.getGtCols();
 			for (GTCol col : cols) {
-				Node colNode = xmlManager.createElement(xmlManager
-						.getDocument(), "Column");
+				Node colNode = xmlManager.createElement(xmlManager.getDocument(), "Column");
 				addGroundTruthCoordinates(xmlManager, colNode, col);
 				tableNode.appendChild(colNode);
 			}
-			
+
 			GTCell cells[][] = table.getGtCells();
-			if (cells!= null){
-				for (int i=0;i<cells.length;i++){
-					for (int j=0;j<cells[i].length;j++){
+			if (cells != null) {
+				for (int i = 0; i < cells.length; i++) {
+					for (int j = 0; j < cells[i].length; j++) {
 						GTCell cell = cells[i][j];
 						Node cellNode = xmlManager.createElement(xmlManager.getDocument(), "Cell");
 						addGroundTruthCoordinates(xmlManager, cellNode, cell);
-						xmlManager.addAttribue((Element)cellNode, "startRow", ""+cell.getStartRow());
-						xmlManager.addAttribue((Element)cellNode, "endRow", ""+cell.getEndRow());
-						xmlManager.addAttribue((Element)cellNode, "startCol", ""+cell.getStartCol());
-						xmlManager.addAttribue((Element)cellNode, "endCol", ""+cell.getEndCol());
-						xmlManager.addAttribue((Element)cellNode, "dontCare", ""+((cell.isDontCare())?"true":"false"));
-						
+						xmlManager.addAttribue((Element) cellNode, "startRow", "" + cell.getStartRow());
+						xmlManager.addAttribue((Element) cellNode, "endRow", "" + cell.getEndRow());
+						xmlManager.addAttribue((Element) cellNode, "startCol", "" + cell.getStartCol());
+						xmlManager.addAttribue((Element) cellNode, "endCol", "" + cell.getEndCol());
+						xmlManager.addAttribue((Element) cellNode, "dontCare",
+								"" + ((cell.isDontCare()) ? "true" : "false"));
+
 						cellNode.setTextContent(cell.getColor().toString());
 						tableNode.appendChild(cellNode);
 					}
@@ -662,11 +659,11 @@ public class CanvasState implements MenuIndexConstants {
 
 		}
 		try {
-			PrintWriter out = new PrintWriter(new BufferedWriter(
-					new OutputStreamWriter(new FileOutputStream(f), "UTF-8")));
+			PrintWriter out = new PrintWriter(
+					new BufferedWriter(new OutputStreamWriter(new FileOutputStream(f), "UTF-8")));
 			xmlManager.serializeXmlDom(xmlManager.getDocument(), out);
 			out.close();
-			
+
 			undoStack.clear();
 			redoStack.clear();
 			updateModifiedFlag();
@@ -678,44 +675,40 @@ public class CanvasState implements MenuIndexConstants {
 	/**
 	 * Sets a new current directory.
 	 * 
-	 * @param newCurrentDirectory
-	 *            the directory to be used as current directory from now on
+	 * @param newCurrentDirectory the directory to be used as current directory from
+	 *                            now on
 	 */
 	public void setCurrentDirectory(String newCurrentDirectory) {
 		currentDirectory = newCurrentDirectory;
 	}
 
 	/**
-	 * @param currentElement
-	 *            the currentElement to set
+	 * @param currentElement the currentElement to set
 	 */
 	public void setCurrentElement(GTElement currentElement) {
 		this.currentElement = currentElement;
 	}
 
 	/**
-	 * @param currentTable
-	 *            the currentTable to set
+	 * @param currentTable the currentTable to set
 	 */
 	public void setCurrentTable(GTTable currentTable) {
 		this.currentTable = currentTable;
 	}
 
 	/**
-	 * @param drawing
-	 *            the drawing to set
+	 * @param drawing the drawing to set
 	 */
 	public void setDrawing(boolean drawing) {
 		this.drawing = drawing;
 	}
 
 	/**
-	 * Sets a new file name. This is used mostly after a new image was loaded
-	 * from a file or if the current image is closed (then a null value would be
-	 * given to this method).
+	 * Sets a new file name. This is used mostly after a new image was loaded from a
+	 * file or if the current image is closed (then a null value would be given to
+	 * this method).
 	 * 
-	 * @param newFileName
-	 *            new name of the current file
+	 * @param newFileName new name of the current file
 	 */
 	public void setFileName(String newFileName) {
 		fileName = newFileName;
@@ -729,63 +722,56 @@ public class CanvasState implements MenuIndexConstants {
 	/**
 	 * Sets a new interpolation type to be used for display.
 	 * 
-	 * @param newInterpolation
-	 *            an int for the interpolation type, must be one of the
-	 *            INTERPOLATION_xyz constants
+	 * @param newInterpolation an int for the interpolation type, must be one of the
+	 *                         INTERPOLATION_xyz constants
 	 */
 	public void setInterpolation(int newInterpolation) {
-		if (newInterpolation == INTERPOLATION_NEAREST_NEIGHBOR
-				|| newInterpolation == INTERPOLATION_BILINEAR
+		if (newInterpolation == INTERPOLATION_NEAREST_NEIGHBOR || newInterpolation == INTERPOLATION_BILINEAR
 				|| newInterpolation == INTERPOLATION_BICUBIC) {
 			interpolation = newInterpolation;
 		}
 	}
 
-	public void close(){
-		if ( isModified()){
-		
+	public void close() {
+		if (isModified()) {
+
 		}
 	}
 
-	public boolean isModified(){
+	public boolean isModified() {
 		return modified;
 	}
-	
+
 	/**
-	 * @param list
-	 *            the list to set
+	 * @param list the list to set
 	 */
 	public void setList(ArrayList<GTTable> list) {
 		this.list = list;
 	}
 
 	/**
-	 * @param markType
-	 *            the markType to set
+	 * @param markType the markType to set
 	 */
 	public void setMarkType(int markType) {
 		this.markType = markType;
 	}
 
 	/**
-	 * @param markType
-	 *            the markType to set
+	 * @param markType the markType to set
 	 */
 	public void setPressedButton(int button) {
 		this.pressedButton = button;
 	}
 
 	/**
-	 * @param redoStack
-	 *            the redoStack to set
+	 * @param redoStack the redoStack to set
 	 */
 	public void setRedoStack(Stack<GTElement> redoStack) {
 		this.redoStack = redoStack;
 	}
 
 	/**
-	 * @param undoStack
-	 *            the undoStack to set
+	 * @param undoStack the undoStack to set
 	 */
 	public void setUndoStack(Stack<GTElement> undoStack) {
 		this.undoStack = undoStack;
@@ -821,23 +807,21 @@ public class CanvasState implements MenuIndexConstants {
 		}
 	}
 
-	public void saveGTImage(File file){
-		
+	public void saveGTImage(File file) {
+
 		PNGCodec codec = new PNGCodec();
-		try
-		{
+		try {
 			codec.setOutputStream(new BufferedOutputStream(new FileOutputStream(file)));
 			codec.setImage(rgb48Image);
 			codec.process();
 			codec.close();
-		}
-		catch (Exception e)
-		{
+		} catch (Exception e) {
 			System.out.println("Error saving the ground truth image file");
 			return;
 		}
-		
+
 	}
+
 	/**
 	 * Increase the zoom level by one.
 	 * 
@@ -869,8 +853,8 @@ public class CanvasState implements MenuIndexConstants {
 	}
 
 	/**
-	 * Set the zoom level to 100 percent (1:1). Each image pixel will be
-	 * displayed as one pixel
+	 * Set the zoom level to 100 percent (1:1). Each image pixel will be displayed
+	 * as one pixel
 	 * 
 	 * @see #zoomIn
 	 * @see #zoomOut
@@ -880,18 +864,22 @@ public class CanvasState implements MenuIndexConstants {
 		zoomFactorX = 1.0;
 		zoomFactorY = 1.0;
 	}
+
 	public MemoryRGB48Image getRgb48Image() {
 		return rgb48Image;
 	}
+
 	public void setRgb48Image(MemoryRGB48Image rgb48Image) {
 		this.rgb48Image = rgb48Image;
 	}
+
 	/**
 	 * @return the initialCellsMarked
 	 */
 	public boolean isInitialCellsMarked() {
 		return initialCellsMarked;
 	}
+
 	/**
 	 * @param initialCellsMarked the initialCellsMarked to set
 	 */

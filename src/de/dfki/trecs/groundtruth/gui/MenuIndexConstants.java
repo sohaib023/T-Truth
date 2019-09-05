@@ -4,7 +4,8 @@
 package de.dfki.trecs.groundtruth.gui;
 
 /**
- * This interface represents the integer values for each of the Menu items. 
+ * This interface represents the integer values for each of the Menu items.
+ * 
  * @author Shahab
  *
  */
@@ -30,5 +31,5 @@ public interface MenuIndexConstants {
 	int SAVE_GT_FILE = 17;
 	int OPEN_GT_FILE = 18;
 	int NUM_CONSTANTS = 19;
-	
+
 }
