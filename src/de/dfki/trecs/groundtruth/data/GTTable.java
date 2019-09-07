@@ -32,6 +32,8 @@ public class GTTable extends BoundingBox implements GTElement {
 	
 	public static final int CORNER_THICKNESS = 30;
 	
+	public static final int ROW_COL_THICKNESS = 20;
+	
 	
 	private ArrayList<GTRow> gtRows = new ArrayList<GTRow>();
 	private ArrayList<GTCol> gtCols = new ArrayList<GTCol>();
@@ -365,6 +367,24 @@ public class GTTable extends BoundingBox implements GTElement {
 		
 		this.setY0(p1.y);
 		this.setY1(p2.y);
+	}
+	
+	public GTElement getElementAtPosition(int x, int y) {
+		ArrayList<GTCol> cols = this.getGtCols();
+		for(int i=0; i<cols.size(); i++) {
+			if(x > cols.get(i).getX0() - ROW_COL_THICKNESS/2 && 
+					x < cols.get(i).getX0() + ROW_COL_THICKNESS/2) {
+				return cols.get(i);
+			}
+		}
+		ArrayList<GTRow> rows = this.getGtRows();
+		for(int i=0; i<rows.size(); i++) {
+			if(y > rows.get(i).getY0() - ROW_COL_THICKNESS/2 && 
+					y < rows.get(i).getY0() + ROW_COL_THICKNESS/2) {
+				return rows.get(i);
+			}
+		}
+		return null;
 	}
 	
 	public int getSelectedCorner() {

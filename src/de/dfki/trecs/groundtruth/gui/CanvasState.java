@@ -583,17 +583,17 @@ public class CanvasState implements MenuIndexConstants {
 	public void markRowColSpan() {
 		if (isInitialCellsMarked()) {
 			markType = MARK_ROW_COL_SPAN;
-			currentTable = null;
 		}
 		else {
 			markType = MARK_NONE;
 		}
-
+		currentTable = null;
+		currentElement = null;
 	}
 
 	public void markRowColumns() {
 		markType = MARK_ROW_COL;
-		currentElement = new GTRow();
+		currentElement = null;
 		currentTable = null;
 	}
 
@@ -606,6 +606,7 @@ public class CanvasState implements MenuIndexConstants {
 	public void markOrientation() {
 		markType = MARK_ORIENTATION;
 		currentTable = null;
+		currentElement = null;
 	}
 
 	public void redo() {

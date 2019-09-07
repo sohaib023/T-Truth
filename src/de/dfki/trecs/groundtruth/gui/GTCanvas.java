@@ -23,6 +23,7 @@ import net.sourceforge.jiu.data.RGB48Image;
 
 import de.dfki.trecs.groundtruth.data.GTCell;
 import de.dfki.trecs.groundtruth.data.GTCol;
+import de.dfki.trecs.groundtruth.data.GTElement;
 import de.dfki.trecs.groundtruth.data.GTRow;
 import de.dfki.trecs.groundtruth.data.GTTable;
 
@@ -239,6 +240,45 @@ public class GTCanvas extends Canvas implements MouseMotionListener, MouseListen
 
 	public void drawGTStateElements(Graphics g) {
 		ArrayList<GTTable> tableList = state.getList();
+		if (state.getMarkType() != CanvasState.MARK_ORIENTATION && state.getCurrentTable() != null) {
+			GTTable table = state.getCurrentTable();
+			Point p = translateToScreenPoint(new Point(table.getX0(), table.getY0()));
+			Point p2 = translateToScreenPoint(new Point(table.getX1(), table.getY1()));
+			Color color = table.getForegroundColor();
+			Color tmpColor = new Color(color.getRed(), color.getGreen(), color.getBlue(), 70);
+			g.setColor(tmpColor);
+			g.fillRect(p.x, p.y, p2.x - p.x, p2.y - p.y);
+			if(state.getMarkType() == CanvasState.MARK_TABLE) {
+				color = Color.yellow;
+				tmpColor = new Color(color.getRed(), color.getGreen(), color.getBlue(), 130);
+				g.setColor(tmpColor);
+				int thickness = (int) (GTTable.CORNER_THICKNESS * zoomFactorX);
+				g.fillRect(p.x, p.y, thickness, thickness);
+				g.fillRect(p.x, p2.y - thickness, thickness, thickness);
+				g.fillRect(p2.x - thickness, p.y, thickness, thickness);
+				g.fillRect(p2.x - thickness, p2.y - thickness, thickness, thickness);
+			}
+			GTElement elem = state.getCurrentElement();
+			if(elem != null) {
+				color = Color.yellow;
+				tmpColor = new Color(color.getRed(), color.getGreen(), color.getBlue(), 180);
+				g.setColor(tmpColor);
+				int thickness = (int) (GTTable.ROW_COL_THICKNESS * zoomFactorX);
+				
+				if(table.getGtRows().contains(elem)) {
+					p = translateToScreenPoint(new Point(((GTRow)elem).getX0(), ((GTRow)elem).getY0()));
+
+					thickness = (int) (GTTable.ROW_COL_THICKNESS * zoomFactorX);
+					g.fillRect(p.x, p.y - thickness/2, p2.x - p.x, thickness);
+				}
+				else if(table.getGtCols().contains(elem)) {
+					p = translateToScreenPoint(new Point(((GTCol)elem).getX0(), ((GTCol)elem).getY0()));
+				
+					thickness = (int) (GTTable.ROW_COL_THICKNESS * zoomFactorX);
+					g.fillRect(p.x - thickness/2, p.y, thickness, p2.y - p.y);
+				}
+			}
+		}
 		for (GTTable table : tableList) {
 			if(state.getMarkType() == CanvasState.MARK_ORIENTATION) {
 				Point p = translateToScreenPoint(new Point(table.getX0(), table.getY0()));
@@ -313,25 +353,6 @@ public class GTCanvas extends Canvas implements MouseMotionListener, MouseListen
 //						//g.setColor(cell.getForegroundColor());
 //						g.fillRect(p.x, p.y, p2.x-p.x, p2.y-p.y);
 //					}
-			}
-		}
-		if (state.getMarkType() != CanvasState.MARK_ORIENTATION && state.getCurrentTable() != null) {
-			GTTable table = state.getCurrentTable();
-			Point p = translateToScreenPoint(new Point(table.getX0(), table.getY0()));
-			Point p2 = translateToScreenPoint(new Point(table.getX1(), table.getY1()));
-			Color color = table.getForegroundColor();
-			Color tmpColor = new Color(color.getRed(), color.getGreen(), color.getBlue(), 70);
-			g.setColor(tmpColor);
-			g.fillRect(p.x, p.y, p2.x - p.x, p2.y - p.y);
-			if(state.getMarkType() == CanvasState.MARK_TABLE) {
-				color = Color.yellow;
-				tmpColor = new Color(color.getRed(), color.getGreen(), color.getBlue(), 130);
-				g.setColor(tmpColor);
-				int thickness = (int) (GTTable.CORNER_THICKNESS * zoomFactorX);
-				g.fillRect(p.x, p.y, thickness, thickness);
-				g.fillRect(p.x, p2.y - thickness, thickness, thickness);
-				g.fillRect(p2.x - thickness, p.y, thickness, thickness);
-				g.fillRect(p2.x - thickness, p2.y - thickness, thickness, thickness);
 			}
 		}
 
@@ -656,18 +677,24 @@ public class GTCanvas extends Canvas implements MouseMotionListener, MouseListen
 					Point p = translateToImagePoint(new Point(e.getX(), e.getY()));
 					GTTable table = state.getTable(p.x, p.y);
 					if (table == state.getCurrentTable()) {
-
-						if (e.getButton() == e.BUTTON1) {
-							GTRow row = new GTRow(table.getX0(), p.y, table.getX1());
-							state.addGTRow(row);
-						} else if (e.getButton() == e.BUTTON3) {
-							// System.out.println("Mouse right click");
-							GTCol col = new GTCol(p.x, table.getY0(), table.getY1());
-							state.addGTCol(col);
+						GTElement elem = table.getElementAtPosition(p.x, p.y);
+						if(elem != null) {
+							state.setCurrentElement(elem);
+						}
+						else {
+							if (e.getButton() == e.BUTTON1) {
+								GTRow row = new GTRow(table.getX0(), p.y, table.getX1());
+								state.addGTRow(row);
+							} else if (e.getButton() == e.BUTTON3) {
+								GTCol col = new GTCol(p.x, table.getY0(), table.getY1());
+								state.addGTCol(col);
+							}
+							state.setCurrentElement(null);
 						}
 						repaint();
 					} else if (table != null) {
 						state.setCurrentTable(table);
+						state.setCurrentElement(null);
 						repaint();
 					}
 
@@ -781,7 +808,6 @@ public class GTCanvas extends Canvas implements MouseMotionListener, MouseListen
 				
 						table.moveTo(p1, p2);
 					}
-					this.drawGTStateElements(this.getGraphics());
 					repaint();
 				}
 				break;

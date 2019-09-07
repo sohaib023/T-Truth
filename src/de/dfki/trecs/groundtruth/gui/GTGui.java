@@ -28,6 +28,9 @@ import java.util.Date;
 
 import javax.swing.JOptionPane;
 
+import de.dfki.trecs.groundtruth.data.GTCol;
+import de.dfki.trecs.groundtruth.data.GTRow;
+import de.dfki.trecs.groundtruth.data.GTTable;
 import de.dfki.trecs.groundtruth.util.ImageInfo;
 
 import net.sourceforge.jiu.data.PixelImage;
@@ -510,10 +513,21 @@ public class GTGui extends Frame implements ActionListener, ComponentListener, K
 		}
 		else {
 			if (e.getKeyCode() == KeyEvent.VK_DELETE) {
-				if (state.getCurrentTable()!=null) {
-					state.removeGTTable(state.getCurrentTable());
-					state.setCurrentTable(null);
-					canvas.repaint();
+				GTTable table = state.getCurrentTable();
+				if (table!=null) {
+					if(state.getMarkType() == CanvasState.MARK_TABLE) {
+						state.removeGTTable(table);
+						state.setCurrentTable(null);
+						canvas.repaint();						
+					}
+					else if(state.getCurrentElement()==null && state.getMarkType() == CanvasState.MARK_ROW_COL){
+						if(table.getGtRows().contains(state.getCurrentElement())) 
+							table.remove((GTRow)state.getCurrentElement());
+						else if(table.getGtCols().contains(state.getCurrentElement())) 
+							table.remove((GTCol)state.getCurrentElement());
+						state.setCurrentElement(null);
+						canvas.repaint();
+					}
 				}
 			}
 		}
