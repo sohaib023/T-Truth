@@ -34,8 +34,10 @@ public abstract class OperationProcessor implements MenuIndexConstants{
 	public abstract void zoomOut();
 	
 	public abstract void zoomToFit();
-	
+
 	public abstract void markTable();
+	
+	public abstract void markOrientation();
 	/**
 	 * save file as currently open in the application.
 	 */
@@ -85,6 +87,9 @@ public abstract class OperationProcessor implements MenuIndexConstants{
 			break;
 		case MenuIndexConstants.MARK_ROW_COL:
 			markRowColumns();
+			break;
+		case MenuIndexConstants.MARK_ORIENTATION:
+			markOrientation();
 			break;
 		case MenuIndexConstants.SAVE_GT_FILE:
 			saveGroundTruthFile();

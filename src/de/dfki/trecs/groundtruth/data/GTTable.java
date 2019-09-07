@@ -18,13 +18,30 @@ import de.dfki.trecs.groundtruth.color.ColorModel16Bit;
  */
 public class GTTable extends BoundingBox implements GTElement {
 
+	public static final int HORIZONTAL = 0;
+	public static final int VERTICAL = 1;
+	public static final int UNKNOWN = 2;
+	
+	public static final int CORNER_TOP_LEFT = 0;
+	
+	public static final int CORNER_TOP_RIGHT = 1;
+	
+	public static final int CORNER_BOTTOM_LEFT = 2;
+	
+	public static final int CORNER_BOTTOM_RIGHT = 3;
+	
+	public static final int CORNER_THICKNESS = 30;
+	
+	
 	private ArrayList<GTRow> gtRows = new ArrayList<GTRow>();
 	private ArrayList<GTCol> gtCols = new ArrayList<GTCol>();
 	private ArrayList<GTCell> cells = new ArrayList<GTCell>();
 	private GTCell gtCells[][] = null;
 	private int index;
-	private Color foregroundColor = Color.RED;
-
+	private Color foregroundColor = Color.BLUE;
+	private int orientation = UNKNOWN;
+	private int selectedCorner = -1;
+	
 	public ArrayList<GTCell> getCells() {
 		return cells;
 	}
@@ -269,11 +286,93 @@ public class GTTable extends BoundingBox implements GTElement {
 		this.gtCells = gtCells;
 	}
 
+	public int getOrientation() {
+		return this.orientation;
+	}
+	
+	public void setOrientation(int orientation) {
+		if (orientation == HORIZONTAL)
+			this.foregroundColor = Color.RED;
+		else if (orientation == VERTICAL)
+			this.foregroundColor = Color.GREEN;
+		else
+			this.foregroundColor = Color.BLUE;
+		this.orientation = orientation;
+	}
+	
 	public int getIndex() {
 		return index;
 	}
 
 	public void setIndex(int index) {
 		this.index = index;
+	}
+	
+	public int getCorner(int x0, int y0) {
+		System.out.println("" + x0 + ", " + y0);
+		if(x0 >= getX0() && x0 < getX0() + CORNER_THICKNESS) {
+			if(y0 >= getY0() && y0 < getY0() + CORNER_THICKNESS) {
+				return CORNER_TOP_LEFT;
+			}
+			else if(y0 > getY1() - CORNER_THICKNESS && y0 <= getY1()) {
+				return CORNER_BOTTOM_LEFT;
+			} 
+		}
+		else if(x0 >= getX1() - CORNER_THICKNESS && x0 < getX1()) {
+			System.out.println("x1");
+			if(y0 >= getY0() && y0 < getY0() + CORNER_THICKNESS) {
+				return CORNER_TOP_RIGHT;
+			}
+			else if(y0 > getY1() - CORNER_THICKNESS && y0 <= getY1()) {
+				return CORNER_BOTTOM_RIGHT;
+			} 
+		}
+		return -1;
+	}
+	
+	public void moveTo(Point p1, Point p2) {
+		ArrayList<GTCol> cols = this.getGtCols();
+		for(int i=0; i<cols.size(); i++) {
+			GTCol col = cols.get(i);
+			col.setY0(p1.y);
+			col.setY1(p2.y);
+			if(col.getX0() < p1.x) {
+				col.setX0(p1.x);
+				col.setX1(p1.x);
+			}
+			else if (col.getX1() > p2.x) {
+				col.setX0(p2.x);
+				col.setX1(p2.x);
+			}
+		}
+		ArrayList<GTRow> rows = this.getGtRows();
+		for(int i=0; i<rows.size(); i++) {
+			GTRow row = rows.get(i);
+			row.setX0(p1.x);
+			row.setX1(p2.x);
+			if(row.getY0() < p1.y) {
+				row.setY0(p1.y);	
+				row.setY1(p1.y);
+			}
+			else if (row.getY1() > p2.y) {
+				row.setY0(p2.y);
+				row.setY1(p2.y);
+			}
+		}
+		
+		this.setX0(p1.x);
+		this.setX1(p2.x);
+		
+		this.setY0(p1.y);
+		this.setY1(p2.y);
+	}
+	
+	public int getSelectedCorner() {
+		return this.selectedCorner;
+	}
+	
+	public void setSelectedCorner(int corner) {
+		this.selectedCorner = corner;
+		System.out.println(corner);
 	}
 }

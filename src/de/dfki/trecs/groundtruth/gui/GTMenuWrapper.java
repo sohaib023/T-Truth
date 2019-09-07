@@ -11,6 +11,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -83,7 +84,9 @@ public class GTMenuWrapper implements MenuIndexConstants {
 	 */
 	private void loadMenuLabels() {
 		try {
-			InputStream stream = this.getClass().getClassLoader().getResourceAsStream("menu.txt");
+//			InputStream stream = this.getClass().getClassLoader().getResourceAsStream("menu.txt");
+			File initialFile = new File("resources/menu.txt");
+		    InputStream stream = new FileInputStream(initialFile);
 			// BufferedReader reader = new BufferedReader(new FileReader(new
 			// File(menuResource)));
 			BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
@@ -91,6 +94,7 @@ public class GTMenuWrapper implements MenuIndexConstants {
 			int index = 0;
 			while ((line = reader.readLine()) != null) {
 				menuLabels[index] = line.trim();
+				System.out.println(line.trim());
 				index++;
 				if (index > menuLabels.length)
 					break;
@@ -125,6 +129,7 @@ public class GTMenuWrapper implements MenuIndexConstants {
 		editMenu.add(items[MenuIndexConstants.MARK_TABLE]);
 		editMenu.add(items[MenuIndexConstants.MARK_ROW_COL]);
 		editMenu.add(items[MenuIndexConstants.MARK_ROW_COL_SPAN]);
+		editMenu.add(items[MenuIndexConstants.MARK_ORIENTATION]);
 		editMenu.add(items[MenuIndexConstants.ASSIGN_COLORS]);
 		editMenu.add(items[MenuIndexConstants.UNDO]);
 		editMenu.add(items[MenuIndexConstants.REDO]);
@@ -161,6 +166,10 @@ public class GTMenuWrapper implements MenuIndexConstants {
 			return new MenuShortcut(KeyEvent.VK_R);
 		case (MenuIndexConstants.MARK_ROW_COL_SPAN):
 			return new MenuShortcut(KeyEvent.VK_M);
+		case (MenuIndexConstants.MARK_ORIENTATION):
+			return new MenuShortcut(KeyEvent.VK_G);
+		case (MenuIndexConstants.ASSIGN_COLORS):
+			return new MenuShortcut(KeyEvent.VK_E);
 		case (MenuIndexConstants.SAVE_GT_FILE):
 			return new MenuShortcut(KeyEvent.VK_S);
 		case (MenuIndexConstants.OPEN_GT_FILE):

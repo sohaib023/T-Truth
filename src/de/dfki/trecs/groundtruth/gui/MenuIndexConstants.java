@@ -30,6 +30,7 @@ public interface MenuIndexConstants {
 	int VIEW = 16;
 	int SAVE_GT_FILE = 17;
 	int OPEN_GT_FILE = 18;
-	int NUM_CONSTANTS = 19;
+	int MARK_ORIENTATION = 19;
+	int NUM_CONSTANTS = 20;
 
 }

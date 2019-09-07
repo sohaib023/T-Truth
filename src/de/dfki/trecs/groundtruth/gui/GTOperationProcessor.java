@@ -46,6 +46,14 @@ public class GTOperationProcessor extends OperationProcessor{
 		if (dir!= null){
 			fd.setDirectory(dir);
 		}
+		String name = state.getFileName();
+		if (name != null) {
+//			fd.setName("name");
+			fd.setFile(name.substring(0, name.lastIndexOf('.')) + ".xml");
+			
+			fd.setVisible(true);
+		}
+		
 //	
 //		String fn = state.getFileName();
 //		fn = fn.substring(fn.lastIndexOf(File.separator)+1, fn.lastIndexOf('.'));
@@ -254,7 +262,12 @@ public class GTOperationProcessor extends OperationProcessor{
 		frame.markTable();
 		
 	}
+	@Override
 	public void markRowColumns(){
 		frame.markRowColumns();
+	}
+	@Override
+	public void markOrientation() {
+		frame.markOrientation();
 	}
 }

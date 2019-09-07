@@ -51,8 +51,11 @@ public class CanvasState implements MenuIndexConstants {
 	public static final int MARK_ROW_COL_SPAN = 1;
 
 	public static final int MARK_ROW_COL = 2;
+	
+	public static final int MARK_ORIENTATION = 3;
 
 	public static final int MARK_NONE = -1;
+	
 	/**
 	 * The default number of undo steps possible.
 	 */
@@ -230,6 +233,10 @@ public class CanvasState implements MenuIndexConstants {
 	public void addGTTable(GTTable table) {
 		list.add(table);
 		addUndoElement(table);
+	}
+
+	public void removeGTTable(GTTable table) {
+		list.remove(table);
 	}
 
 	public void addRedoElement(GTElement e) {
@@ -519,7 +526,18 @@ public class CanvasState implements MenuIndexConstants {
 			Node tableNode = tablesList.item(i);
 			GTTable table = new GTTable();
 			loadGTElementFromNode(table, tableNode);
-
+			
+			Node tmp = tableNode.getAttributes().getNamedItem("orientation");
+			String orient = "unknown"; 
+			if(tmp != null)
+				orient = tmp.getTextContent().trim();
+			if(orient.equals("horizontal"))
+				table.setOrientation(GTTable.HORIZONTAL);
+			else if (orient.equals("vertical"))
+				table.setOrientation(GTTable.VERTICAL);
+			else
+				table.setOrientation(GTTable.UNKNOWN);
+			
 			NodeList children = tableNode.getChildNodes();
 
 			for (int j = 0; j < children.getLength(); j++) {
@@ -567,6 +585,9 @@ public class CanvasState implements MenuIndexConstants {
 			markType = MARK_ROW_COL_SPAN;
 			currentTable = null;
 		}
+		else {
+			markType = MARK_NONE;
+		}
 
 	}
 
@@ -580,7 +601,11 @@ public class CanvasState implements MenuIndexConstants {
 		markType = MARK_TABLE;
 		currentTable = null;
 		currentElement = new GTTable();
-
+	}
+	
+	public void markOrientation() {
+		markType = MARK_ORIENTATION;
+		currentTable = null;
 	}
 
 	public void redo() {
@@ -617,6 +642,14 @@ public class CanvasState implements MenuIndexConstants {
 		for (GTTable table : list) {
 			Node tableNode = xmlManager.createElement(xmlManager.getDocument(), "Table");
 			addGroundTruthCoordinates(xmlManager, tableNode, table);
+			
+			if(table.getOrientation() == GTTable.HORIZONTAL)
+				xmlManager.addAttribue((Element) tableNode, "orientation", "horizontal");
+			else if(table.getOrientation() == GTTable.VERTICAL)
+				xmlManager.addAttribue((Element) tableNode, "orientation", "vertical");
+			else
+				xmlManager.addAttribue((Element) tableNode, "orientation", "unknown");
+			
 			tablesNode.appendChild(tableNode);
 			// Node rowsNode =
 			// xmlManager.createElement(xmlManager.getDocument(), "Rows");

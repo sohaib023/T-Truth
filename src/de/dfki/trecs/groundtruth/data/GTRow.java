@@ -46,7 +46,7 @@ public class GTRow extends BoundingBox implements GTElement, Comparable {
 	@Override
 	public Color getForegroundColor() {
 		// TODO Auto-generated method stub
-		return Color.blue;
+		return Color.green;
 	}
 
 	@Override

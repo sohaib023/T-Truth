@@ -118,6 +118,13 @@ public class GTCanvas extends Canvas implements MouseMotionListener, MouseListen
 
 	}
 
+	public void drawLine(int x0, int y0, int x1, int y1, Color color, int thickness, Graphics g) {
+		g.setColor(color);
+		g.drawLine(x0, y0, x1, y1);
+		g.fillRect(x0 - thickness / 2, y0 - thickness / 2, (x1 - x0) + thickness, (y1 - y0) + thickness);
+	}
+
+
 	public void computeZoomToFitSize() {
 		if (!zoomToFit || myScrollPane == null) {
 			return;
@@ -203,7 +210,7 @@ public class GTCanvas extends Canvas implements MouseMotionListener, MouseListen
 //					int tmpX2 = (int) ((x2-x1)*state.getZoomFactorX());
 //					int tmpY2 = (int) ((y2-y1)*state.getZoomFactorY());
 //					g.fillRect(tmpX,tmpY,tmpX2-tmpX,tmpY2-tmpY);
-					paintRectangleBoundary(Math.min(x0, x2), Math.min(y0, y2), Math.max(x0, x2), Math.max(y0, y2), g);
+					paintRectangleBoundary(Math.min(x0, x2), Math.min(y0, y2), Math.max(x0, x2), Math.max(y0, y2), state.getCurrentElement().getForegroundColor(), g);
 					// g.fillRect(x0, y0, x2-x0, y2-y0);
 				}
 					break;
@@ -221,7 +228,7 @@ public class GTCanvas extends Canvas implements MouseMotionListener, MouseListen
 						y2 = p2.y;
 
 					g.setColor(Color.BLACK);
-					g.drawLine(Math.min(x0, x2), Math.min(y0, y2), Math.max(x0, x2), Math.max(y0, y2));
+					this.drawLine(Math.min(x0, x2), Math.min(y0, y2), Math.max(x0, x2), Math.max(y0, y2), Color.BLACK, 2, g);
 					break;
 				}
 
@@ -233,7 +240,18 @@ public class GTCanvas extends Canvas implements MouseMotionListener, MouseListen
 	public void drawGTStateElements(Graphics g) {
 		ArrayList<GTTable> tableList = state.getList();
 		for (GTTable table : tableList) {
-			drawTable(table, g);
+			if(state.getMarkType() == CanvasState.MARK_ORIENTATION) {
+				Point p = translateToScreenPoint(new Point(table.getX0(), table.getY0()));
+				Point p2 = translateToScreenPoint(new Point(table.getX1(), table.getY1()));
+				Color color = table.getForegroundColor();
+				Color tmpColor = new Color(color.getRed(), color.getGreen(), color.getBlue(), 70);
+				g.setColor(tmpColor);
+				g.fillRect(p.x, p.y, p2.x - p.x, p2.y - p.y);
+				continue;
+			}
+			else {
+				drawTable(table, g);
+			}
 
 			if (table.getGtCells() == null) {
 				ArrayList<GTRow> rows = table.getGtRows();
@@ -241,7 +259,7 @@ public class GTCanvas extends Canvas implements MouseMotionListener, MouseListen
 					g.setColor(row.getForegroundColor());
 					Point p = translateToScreenPoint(new Point(row.getX0(), row.getY0()));
 					Point p2 = translateToScreenPoint(new Point(row.getX1(), row.getY1()));
-					g.drawLine(p.x, p.y, p2.x, p2.y);
+					this.drawLine(p.x, p.y, p2.x, p2.y, row.getForegroundColor(), 3, g);
 
 				}
 				ArrayList<GTCol> cols = table.getGtCols();
@@ -249,7 +267,7 @@ public class GTCanvas extends Canvas implements MouseMotionListener, MouseListen
 					g.setColor(col.getForegroundColor());
 					Point p = translateToScreenPoint(new Point(col.getX0(), col.getY0()));
 					Point p2 = translateToScreenPoint(new Point(col.getX1(), col.getY1()));
-					g.drawLine(p.x, p.y, p2.x, p2.y);
+					this.drawLine(p.x, p.y, p2.x, p2.y, col.getForegroundColor(), 3, g);
 				}
 			}
 			GTCell cells[][] = table.getGtCells();
@@ -297,7 +315,7 @@ public class GTCanvas extends Canvas implements MouseMotionListener, MouseListen
 //					}
 			}
 		}
-		if (state.getCurrentTable() != null) {
+		if (state.getMarkType() != CanvasState.MARK_ORIENTATION && state.getCurrentTable() != null) {
 			GTTable table = state.getCurrentTable();
 			Point p = translateToScreenPoint(new Point(table.getX0(), table.getY0()));
 			Point p2 = translateToScreenPoint(new Point(table.getX1(), table.getY1()));
@@ -305,6 +323,16 @@ public class GTCanvas extends Canvas implements MouseMotionListener, MouseListen
 			Color tmpColor = new Color(color.getRed(), color.getGreen(), color.getBlue(), 70);
 			g.setColor(tmpColor);
 			g.fillRect(p.x, p.y, p2.x - p.x, p2.y - p.y);
+			if(state.getMarkType() == CanvasState.MARK_TABLE) {
+				color = Color.yellow;
+				tmpColor = new Color(color.getRed(), color.getGreen(), color.getBlue(), 130);
+				g.setColor(tmpColor);
+				int thickness = (int) (GTTable.CORNER_THICKNESS * zoomFactorX);
+				g.fillRect(p.x, p.y, thickness, thickness);
+				g.fillRect(p.x, p2.y - thickness, thickness, thickness);
+				g.fillRect(p2.x - thickness, p.y, thickness, thickness);
+				g.fillRect(p2.x - thickness, p2.y - thickness, thickness, thickness);
+			}
 		}
 
 	}
@@ -313,7 +341,7 @@ public class GTCanvas extends Canvas implements MouseMotionListener, MouseListen
 		g.setColor(table.getForegroundColor());
 		Point p1 = translateToScreenPoint(new Point(table.getX0(), table.getY0()));
 		Point p2 = translateToScreenPoint(new Point(table.getX1(), table.getY1()));
-		paintRectangleBoundary(p1.x, p1.y, p2.x, p2.y, g);
+		paintRectangleBoundary(p1.x, p1.y, p2.x, p2.y, table.getForegroundColor(), g);
 	}
 
 	private void drawRow(GTRow row, Graphics g) {
@@ -412,9 +440,11 @@ public class GTCanvas extends Canvas implements MouseMotionListener, MouseListen
 		switch (state.getMarkType()) {
 		case CanvasState.MARK_TABLE:
 
-			x2 = e.getX();
-			y2 = e.getY();
-			drawInteractiveRectangle();
+			if(state.getCurrentTable() == null || state.getCurrentTable().getSelectedCorner() != -1) {
+				x2 = e.getX();
+				y2 = e.getY();
+				drawInteractiveRectangle();
+			}
 			break;
 		case CanvasState.MARK_ROW_COL:
 			x2 = e.getX();
@@ -437,13 +467,13 @@ public class GTCanvas extends Canvas implements MouseMotionListener, MouseListen
 
 	private void drawInteractiveLine(boolean row) {
 		if (previousX != x2 || previousY != y2) {
-			repaint(x0, y0, Math.abs(previousX - x0) + 4, 1);
-			repaint(x0, y0, 1, Math.abs(previousY - y0) + 4);
+			repaint(Math.min(x0, previousX), y0, Math.abs(previousX - x0) + 4, 1);
+			repaint(x0, Math.min(y0, previousY), 1, Math.abs(previousY - y0) + 4);
 
 			previousX = x2;
 			previousY = y2;
-			repaint(x0, y0, Math.abs(x2 - x0), 1);
-			repaint(x0, y0, 1, Math.abs(y2 - y0));
+			repaint(Math.min(x2, x0), y0, Math.abs(x2 - x0), 1);
+			repaint(x0, Math.min(y2, y0), 1, Math.abs(y2 - y0));
 		}
 //			}
 	}
@@ -452,31 +482,46 @@ public class GTCanvas extends Canvas implements MouseMotionListener, MouseListen
 	private void drawInteractiveRectangle() {
 
 		if (previousX != x2 || previousY != y2) {
-			repaint(x0, y0, 1, Math.abs(previousY - y0));
-			repaint(x0, y0, Math.abs(previousX - x0), 1);
-			repaint(previousX, previousY, 1, Math.abs(previousY - y0));
-			repaint(previousX, previousY, Math.abs(previousX - x0), 1);
+			int x0 = Math.min(this.x0, previousX);
+			int x2 = Math.max(this.x0, previousX);
 
-			previousX = x2;
-			previousY = y2;
+			int y0 = Math.min(this.y0, previousY);
+			int y2 = Math.max(this.y0, previousY);
+			
+//			repaint(x0-50, y0-50, (x2-x0)+100, (y2-y0)+100);
+			
+			int thickness=5;
+			repaint(x0 - thickness/2, y0- thickness/2, thickness, y2 - y0);
+			repaint(x0- thickness/2, y0- thickness/2, x2 - x0, thickness);
+			repaint(x2- thickness/2, y0- thickness/2, thickness, Math.abs(y2 - y0));
+			repaint(x2- thickness/2, y2- thickness/2, Math.abs(x2 - x0), thickness);
+//
+			previousX = this.x2;
+			previousY = this.y2;
+			
+			x0 = Math.min(this.x0, previousX);
+			x2 = Math.max(this.x0, previousX);
 
-			repaint(x0, y0, 1, Math.abs(previousY - y0));
-			repaint(x0, y0, Math.abs(previousX - x0), 1);
-			repaint(previousX, previousY, 1, Math.abs(previousY - y0));
-			repaint(previousX, previousY, Math.abs(previousX - x0), 1);
+			y0 = Math.min(this.y0, previousY);
+			y2 = Math.max(this.y0, previousY);
+
+			repaint(x0 - thickness/2, y0- thickness/2, thickness, y2 - y0);
+			repaint(x0- thickness/2, y0- thickness/2, x2 - x0, thickness);
+			repaint(x2- thickness/2, y0- thickness/2, thickness, Math.abs(y2 - y0));
+			repaint(x2- thickness/2, y2- thickness/2, Math.abs(x2 - x0), thickness);
 		}
 	}
-
-	private void paintRectangleBoundary(int x0, int y0, int x2, int y2, Graphics g) {
+	
+	private void paintRectangleBoundary(int x0, int y0, int x2, int y2, Color color, Graphics g) {
 		if (x0 > imageX && y0 > imageY && x2 > x0 && y2 > y0) {
 			if (x2 > imageX + scaledWidth)
 				x2 = imageX + scaledWidth;
 			if (y2 > imageY + scaledHeight)
 				y2 = imageY + scaledHeight;
-			g.drawLine(x0, y0, x0, y2);
-			g.drawLine(x0, y0, x2, y0);
-			g.drawLine(x2, y2, x2, y0);
-			g.drawLine(x2, y2, x0, y2);
+			this.drawLine(x0, y0, x0, y2, color, 3, g);
+			this.drawLine(x0, y0, x2, y0, color, 3, g);
+			this.drawLine(x2, y0, x2, y2, color, 3, g);
+			this.drawLine(x0, y2, x2, y2, color, 3, g);
 
 		}
 	}
@@ -550,11 +595,52 @@ public class GTCanvas extends Canvas implements MouseMotionListener, MouseListen
 
 			switch (state.getMarkType()) {
 			case CanvasState.MARK_TABLE:
-				if (isImagePoint(e.getX(), e.getY())) {
-					x0 = e.getX();
-					y0 = e.getY();
-					state.setDrawing(true);
+				if (state.getCurrentTable() == null) {
+					Point p = translateToImagePoint(new Point(e.getX(), e.getY()));
+					GTTable table = state.getTable(p.x, p.y);
+					if (table != null) {
+						state.setCurrentTable(table);
+						repaint();
+					}
+					else if (isImagePoint(e.getX(), e.getY())) {
+						x0 = e.getX();
+						y0 = e.getY();
+						state.setDrawing(true);
+					}
+				} else {
+					Point p = translateToImagePoint(new Point(e.getX(), e.getY()));
+					GTTable table = state.getTable(p.x, p.y);
+					if (table == state.getCurrentTable()) {
+						int corner = table.getCorner(p.x, p.y);
+						if(corner != -1) {
+							table.setSelectedCorner(corner);
+							switch(corner) {
+							case GTTable.CORNER_BOTTOM_LEFT:
+								p = translateToScreenPoint(new Point(table.getX1(), table.getY0()));
+								break;
+							case GTTable.CORNER_BOTTOM_RIGHT:
+								p = translateToScreenPoint(new Point(table.getX0(), table.getY0()));
+								break;
+							case GTTable.CORNER_TOP_LEFT:
+								p = translateToScreenPoint(new Point(table.getX1(), table.getY1()));
+								break;
+							case GTTable.CORNER_TOP_RIGHT:
+								p = translateToScreenPoint(new Point(table.getX0(), table.getY1()));
+								break;
+							}
+							x0 = p.x;
+							y0 = p.y;
+							state.setDrawing(true);
+						}
+					} else if (table != null) {
+						state.setCurrentTable(table);
+					}
+					else {
+						state.setCurrentTable(null);
+					}
+					repaint();
 				}
+
 				// reportMousePosition(e);
 				break;
 			case CanvasState.MARK_ROW_COL:
@@ -629,6 +715,18 @@ public class GTCanvas extends Canvas implements MouseMotionListener, MouseListen
 
 				}
 				break;
+			case CanvasState.MARK_ORIENTATION:
+				Point p = translateToImagePoint(new Point(e.getX(), e.getY()));
+				GTTable table = state.getTable(p.x, p.y);
+				if (table != null) {
+					if (e.getButton() == e.BUTTON1) {
+						table.setOrientation(table.HORIZONTAL);
+					} else if (e.getButton() == e.BUTTON3) {
+						table.setOrientation(table.VERTICAL);
+					}
+					repaint();
+				}
+				break;
 			}
 
 		}
@@ -658,18 +756,33 @@ public class GTCanvas extends Canvas implements MouseMotionListener, MouseListen
 			switch (state.getMarkType()) {
 			case CanvasState.MARK_TABLE:
 				state.setDrawing(false);
-				if (x2 != x0 && y2 != y0) {
-					x2 = e.getX();
-					y2 = e.getY();
-					if (x2 > imageX + scaledWidth)
-						x2 = imageX + scaledWidth;
-					if (y2 > imageY + scaledHeight)
-						y2 = imageY + scaledHeight;
-					Point p1 = translateToImagePoint(new Point(Math.min(x0, x2), Math.min(y0, y2)));
-					Point p2 = translateToImagePoint(new Point(Math.max(x0, x2), Math.max(y0, y2)));
-					clearInteractiveDrawingLoc();
-					GTTable table = new GTTable(p1.x, p1.y, p2.x, p2.y);
-					state.addGTTable(table);
+				System.out.println(state.getCurrentTable());
+				x2 = e.getX();
+				y2 = e.getY();
+				if (x2 > imageX + scaledWidth)
+					x2 = imageX + scaledWidth;
+				if (y2 > imageY + scaledHeight)
+					y2 = imageY + scaledHeight;
+				
+				if(state.getCurrentTable() == null){
+					if (x2 != x0 && y2 != y0) {
+						Point p1 = translateToImagePoint(new Point(Math.min(x0, x2), Math.min(y0, y2)));
+						Point p2 = translateToImagePoint(new Point(Math.max(x0, x2), Math.max(y0, y2)));
+						clearInteractiveDrawingLoc();
+						GTTable table = new GTTable(p1.x, p1.y, p2.x, p2.y);
+						state.addGTTable(table);
+					}
+				}
+				else {
+					GTTable table = state.getCurrentTable();
+					if(table.getSelectedCorner() != -1 && x2 != x0 && y2 != y0) {
+						Point p1 = translateToImagePoint(new Point(Math.min(x0, x2), Math.min(y0, y2)));
+						Point p2 = translateToImagePoint(new Point(Math.max(x0, x2), Math.max(y0, y2)));
+				
+						table.moveTo(p1, p2);
+					}
+					this.drawGTStateElements(this.getGraphics());
+					repaint();
 				}
 				break;
 			case CanvasState.MARK_ROW_COL_SPAN:

@@ -196,6 +196,12 @@ public class GTGui extends Frame implements ActionListener, ComponentListener, K
 		canvas.repaint();
 		updateStatusBar();
 	}
+	
+	public void markOrientation() {
+		state.markOrientation();
+		canvas.repaint();
+		updateStatusBar();
+	}
 
 	private int showGroundTruthConfirmationDialog() {
 		return JOptionPane.showConfirmDialog(this, "Ground Truth has been modified, do you want to save it?",
@@ -374,6 +380,9 @@ public class GTGui extends Frame implements ActionListener, ComponentListener, K
 		case CanvasState.MARK_ROW_COL_SPAN:
 			statusBarText = statusBarText + ", Marking Rows/Columns Span ";
 			break;
+		case CanvasState.MARK_ORIENTATION:
+			statusBarText = statusBarText + ", Marking Orientation of Tables ";
+			break;
 
 		}
 		if (isPreviewMode())
@@ -497,6 +506,15 @@ public class GTGui extends Frame implements ActionListener, ComponentListener, K
 			case 'P':
 				previousImagePreview();
 				break;
+			}
+		}
+		else {
+			if (e.getKeyCode() == KeyEvent.VK_DELETE) {
+				if (state.getCurrentTable()!=null) {
+					state.removeGTTable(state.getCurrentTable());
+					state.setCurrentTable(null);
+					canvas.repaint();
+				}
 			}
 		}
 
