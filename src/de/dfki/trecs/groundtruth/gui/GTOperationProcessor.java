@@ -59,7 +59,7 @@ public class GTOperationProcessor extends OperationProcessor{
 //		fn = fn.substring(fn.lastIndexOf(File.separator)+1, fn.lastIndexOf('.'));
 //		fn = fn+".xml";
 //		fd.setFile(fn);
-		fd.setVisible(true);
+//		fd.setVisible(true);
 		
 		
 		String dn = fd.getDirectory();
