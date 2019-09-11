@@ -233,20 +233,6 @@ public class GTTable extends BoundingBox implements GTElement {
 	}
 
 	@Override
-	public void initializePosition(int x, int y) {
-		// TODO Auto-generated method stub
-		setX0(x);
-		setY0(y);
-	}
-
-	@Override
-	public void updatePosition(int x, int y) {
-		// TODO Auto-generated method stub
-		setX1(x);
-		setY1(y);
-	}
-
-	@Override
 	public Color getForegroundColor() {
 		// TODO Auto-generated method stub
 		return foregroundColor;

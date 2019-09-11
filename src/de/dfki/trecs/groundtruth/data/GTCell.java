@@ -94,20 +94,6 @@ public class GTCell extends BoundingBox implements GTElement, Comparable {
 		super(x0, y0, x1, y1);
 	}
 
-	@Override
-	public void initializePosition(int x, int y) {
-		setX0(x);
-		setY0(y);
-
-	}
-
-	@Override
-	public void updatePosition(int x, int y) {
-		// TODO Auto-generated method stub
-		setX1(x);
-		setY1(y);
-	}
-
 	/**
 	 * @return the color
 	 */
