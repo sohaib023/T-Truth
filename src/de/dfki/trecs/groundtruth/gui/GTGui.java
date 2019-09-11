@@ -520,7 +520,7 @@ public class GTGui extends Frame implements ActionListener, ComponentListener, K
 						state.setCurrentTable(null);
 						canvas.repaint();						
 					}
-					else if(state.getCurrentElement()==null && state.getMarkType() == CanvasState.MARK_ROW_COL){
+					else if(state.getCurrentElement()!=null && state.getMarkType() == CanvasState.MARK_ROW_COL){
 						if(table.getGtRows().contains(state.getCurrentElement())) 
 							table.remove((GTRow)state.getCurrentElement());
 						else if(table.getGtCols().contains(state.getCurrentElement())) 
