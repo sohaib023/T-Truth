@@ -1,9 +1,4 @@
-/**
- * 
- */
 package de.dfki.trecs.groundtruth.data;
-
-import static java.awt.Color.green;
 
 import java.awt.Color;
 
@@ -18,31 +13,19 @@ import de.dfki.tablerecognizer.block.BoundingBox;
  */
 public class GTRow extends BoundingBox implements GTElement, Comparable {
 
+	private GTTable table;
+	
 	public GTRow() {
 		super();
 	}
 
-	@Override
-	public void initializePosition(int x, int y) {
-		// TODO Auto-generated method stub
-		setX0(x);
-		setY0(y);
-		setY1(y);
-	}
-
-	private GTTable table;
-
-	@Override
-	public void updatePosition(int x, int y) {
-		// TODO Auto-generated method stub
-		setX1(x);
-	}
-
 	public GTRow(int x0, int y0, int x1) {
-		initializePosition(x0, y0);
-		updatePosition(x1, y0);
+		setX0(x0);
+		setX1(x1);
+		setY0(y0);
+		setY1(y0);
 	}
-
+	
 	@Override
 	public Color getForegroundColor() {
 		// TODO Auto-generated method stub

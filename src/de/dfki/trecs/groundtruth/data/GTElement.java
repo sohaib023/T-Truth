@@ -11,9 +11,9 @@ public interface GTElement {
 	 * @param x
 	 * @param y
 	 */
-	public void updatePosition(int x, int y);
+//	public void updatePosition(int x, int y);
 
-	public void initializePosition(int x, int y);
+//	public void initializePosition(int x, int y);
 
 	public Color getForegroundColor();
 }

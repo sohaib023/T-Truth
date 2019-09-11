@@ -28,25 +28,6 @@ public class GTCol extends BoundingBox implements GTElement, Comparable {
 		setY1(y1);
 	}
 
-	public GTCol(int x, int y) {
-		setX0(x);
-		setY0(y);
-		setX1(x);
-		setY1(y);
-	}
-
-	public void updatePosition(int x, int y) {
-		setY1(y);
-	}
-
-	@Override
-	public void initializePosition(int x, int y) {
-		setX0(x);
-		setY0(y);
-		setX1(x);
-
-	}
-
 	@Override
 	public Color getForegroundColor() {
 		// TODO Auto-generated method stub
