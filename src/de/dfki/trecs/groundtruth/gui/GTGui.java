@@ -6,6 +6,7 @@ package de.dfki.trecs.groundtruth.gui;
 import java.awt.BorderLayout;
 import java.awt.Cursor;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Frame;
 import java.awt.Image;
 import java.awt.Label;
@@ -26,7 +27,9 @@ import java.io.FilenameFilter;
 import java.io.PrintWriter;
 import java.util.Date;
 
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 
 import de.dfki.trecs.groundtruth.data.GTCol;
 import de.dfki.trecs.groundtruth.data.GTRow;
@@ -61,8 +64,9 @@ public class GTGui extends Frame implements ActionListener, ComponentListener, K
 	public static final String LOG_FILE = "de.dfki.trecs.groundtruth.gui.logfile";
 	private PrintWriter logWriter = null;
 	private boolean logUser = false;
-	private Label statusBar;
-	private Label infoBar;
+	private JLabel statusBar;
+	private JLabel helpBar;
+	private JLabel infoBar;
 
 	private boolean previewMode = false;
 
@@ -133,8 +137,13 @@ public class GTGui extends Frame implements ActionListener, ComponentListener, K
 		canvas = new GTCanvas(scrollPane, state);
 		canvas.setMainGui(this);
 		processor = new GTOperationProcessor(this, state);
-		statusBar = new Label("Loaded ");
-		infoBar = new Label("");
+		statusBar = new JLabel("Loaded ");
+		infoBar = new JLabel("");
+		helpBar = new JLabel("");
+		infoBar.setFont(new Font("Arial", Font.PLAIN, 20));
+		statusBar.setFont(new Font("Arial", Font.BOLD, 30));
+		helpBar.setFont(new Font("Arial", Font.PLAIN, 15));
+		
 		addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent e) {
 				processor.exit();
@@ -144,8 +153,12 @@ public class GTGui extends Frame implements ActionListener, ComponentListener, K
 		setMenuBar(menuWrapper.getMenuBar());
 
 		// add(canvas,BorderLayout.CENTER);
-		add(statusBar, BorderLayout.SOUTH);
-		add(infoBar, BorderLayout.NORTH);
+		JPanel p = new JPanel();
+	    p.setLayout(new BorderLayout());
+		p.add(statusBar, BorderLayout.NORTH);
+		p.add(helpBar, BorderLayout.SOUTH);
+		add(p, BorderLayout.NORTH);
+		add(infoBar, BorderLayout.SOUTH);
 
 		logUser = Boolean.parseBoolean(System.getProperty(GTGui.LOG_USER, "false"));
 		if (isLogUser()) {
@@ -219,6 +232,14 @@ public class GTGui extends Frame implements ActionListener, ComponentListener, K
 
 	public void updateInfoBar(int x, int y, String info) {
 		StringBuffer sb = new StringBuffer();
+		
+		PixelImage image = state.getImage();
+		if (image == null) {
+			sb.append("");
+		} else {
+			sb.append(ImageInfo.getImageInfo(image));
+		}
+		
 		sb.append("(");
 		sb.append(x);
 		sb.append(",");
@@ -370,34 +391,33 @@ public class GTGui extends Frame implements ActionListener, ComponentListener, K
 	 * that text.
 	 */
 	public void updateStatusBar() {
-		PixelImage image = state.getImage();
-		String statusBarText;
-		if (image == null) {
-			statusBarText = "";
-		} else {
-			statusBarText = ImageInfo.getImageInfo(image);
-		}
+		String statusBarText = "";
+		String helpBarText = "";
 		switch (state.getMarkType()) {
 		case CanvasState.MARK_TABLE:
-			statusBarText = statusBarText + ", Marking Tables ";
-
+			statusBarText = "Marking Tables";
+			helpBarText = "Click and Drag mouse to mark table -- OR -- Click on a table to select it.";
 			break;
 		case CanvasState.MARK_ROW_COL:
-			statusBarText = statusBarText + ", Marking Rows/Columns ";
+			statusBarText = "Marking Rows/Columns";
+			helpBarText = "Left click to mark Rows - Right Click to mark Columns -- OR -- Click on already marked row/column to select it.";
 			break;
 		case CanvasState.MARK_ROW_COL_SPAN:
-			statusBarText = statusBarText + ", Marking Rows/Columns Span ";
+			statusBarText = "Marking Rows/Columns Span";
+			helpBarText = "(Left-Click for row-span - Right-Click for column-span) and Drag mouse to mark-span/merge-cells";
 			break;
 		case CanvasState.MARK_ORIENTATION:
-			statusBarText = statusBarText + ", Marking Orientation of Tables ";
+			statusBarText = "Marking Orientation of Tables";
+			helpBarText = "Left Click to mark Horizontal (Red) - Right Click to mark Vertical (Green)";
 			break;
 
 		}
 		if (isPreviewMode())
-			statusBarText = statusBarText + ", PREVIEW MODE (Use 'n' for next, 'p' for previous image)";
+			statusBarText = statusBarText + "PREVIEW MODE (Use 'n' for next, 'p' for previous image)";
 		else if (state.isAutoLoadGT())
-			statusBarText = statusBarText + ", Loading ground truth automatically";
+			statusBarText = statusBarText + "Loading ground truth automatically";
 		setStatusBar(statusBarText);
+		this.helpBar.setText(helpBarText);
 	}
 
 	public void setStatusBar(String text) {
