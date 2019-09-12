@@ -112,7 +112,6 @@ public class CanvasState implements MenuIndexConstants {
 	private boolean modified;
 	private boolean drawing;
 	private GTTable currentTable = null;
-	private boolean initialCellsMarked = false;
 	private int pressedButton = -1;
 
 	private int markType = MARK_NONE;
@@ -121,7 +120,7 @@ public class CanvasState implements MenuIndexConstants {
 
 	private Stack<GTElement> redoStack = new Stack<GTElement>();
 
-	private ArrayList<GTTable> list = new ArrayList<GTTable>();
+	private ArrayList<GTTable> tables = new ArrayList<GTTable>();
 	private GTElement currentElement = null;
 	// private Vector progressListeners;
 	// private Vector redoImages;
@@ -178,7 +177,7 @@ public class CanvasState implements MenuIndexConstants {
 	private void clearList() {
 		undoStack.clear();
 		redoStack.clear();
-		list.clear();
+		tables.clear();
 		currentTable = null;
 		currentElement = null;
 		setGroundTruthFile(null);
@@ -198,7 +197,6 @@ public class CanvasState implements MenuIndexConstants {
 
 		rgb48Image = null;
 		markType = CanvasState.MARK_NONE;
-		initialCellsMarked = false;
 
 	}
 
@@ -231,12 +229,12 @@ public class CanvasState implements MenuIndexConstants {
 	}
 
 	public void addGTTable(GTTable table) {
-		list.add(table);
+		tables.add(table);
 		addUndoElement(table);
 	}
 
 	public void removeGTTable(GTTable table) {
-		list.remove(table);
+		tables.remove(table);
 	}
 
 	public void addRedoElement(GTElement e) {
@@ -297,8 +295,8 @@ public class CanvasState implements MenuIndexConstants {
 	/**
 	 * @return the list
 	 */
-	public ArrayList<GTTable> getList() {
-		return list;
+	public ArrayList<GTTable> getTables() {
+		return tables;
 	}
 
 	/**
@@ -338,7 +336,7 @@ public class CanvasState implements MenuIndexConstants {
 	}
 
 	public GTTable getTable(int x0, int y0) {
-		for (GTTable table : list) {
+		for (GTTable table : tables) {
 			if (x0 >= table.getX0() && y0 >= table.getY0() && x0 <= table.getX1() && y0 <= table.getY1())
 				return table;
 		}
@@ -465,24 +463,6 @@ public class CanvasState implements MenuIndexConstants {
 		}
 	}
 
-	public void evaluateTableCells() {
-		int index = 0;
-		// promoteImage();
-		for (GTTable table : list) {
-			table.setIndex(index);
-			table.evaluateInitialCells();
-			setInitialCellsMarked(true);
-			// colorImageForeground(rgb48Image, table);
-			index++;
-			// table.assignColors();
-		}
-		/**
-		 * clear the stack no undo redo after table cell evaluation
-		 */
-		undoStack.clear();
-		redoStack.clear();
-	}
-
 	private void colorImageForeground(MemoryRGB48Image image, GTTable table) {
 
 		GTCell cells[][] = table.getGtCells();
@@ -566,7 +546,7 @@ public class CanvasState implements MenuIndexConstants {
 			}
 			if (table.getCells().size() > 0)
 				table.populateCellMatrix();
-			list.add(table);
+			tables.add(table);
 
 		}
 	}
@@ -581,14 +561,14 @@ public class CanvasState implements MenuIndexConstants {
 	}
 
 	public void markRowColSpan() {
-		if (isInitialCellsMarked()) {
-			markType = MARK_ROW_COL_SPAN;
-		}
-		else {
-			markType = MARK_NONE;
-		}
+		markType = MARK_ROW_COL_SPAN;
 		currentTable = null;
 		currentElement = null;
+		int index = 1;
+		for(GTTable table: this.getTables()) {
+			table.setIndex(index);
+			index++;
+		}
 	}
 
 	public void markRowColumns() {
@@ -613,7 +593,7 @@ public class CanvasState implements MenuIndexConstants {
 		if (!redoStack.isEmpty()) {
 			GTElement e = redoStack.pop();
 			if (e instanceof GTTable) {
-				list.add((GTTable) e);
+				tables.add((GTTable) e);
 
 			} else if (e instanceof GTRow) {
 				GTTable table = ((GTRow) e).getTable();
@@ -640,7 +620,7 @@ public class CanvasState implements MenuIndexConstants {
 		xmlManager.getDocument().getDocumentElement().setAttribute("InputFile", fileName);
 		Node tablesNode = xmlManager.createElement(xmlManager.getDocument(), "Tables");
 		xmlManager.getDocument().getDocumentElement().appendChild(tablesNode);
-		for (GTTable table : list) {
+		for (GTTable table : tables) {
 			Node tableNode = xmlManager.createElement(xmlManager.getDocument(), "Table");
 			addGroundTruthCoordinates(xmlManager, tableNode, table);
 			
@@ -671,6 +651,7 @@ public class CanvasState implements MenuIndexConstants {
 				tableNode.appendChild(colNode);
 			}
 
+			table.evaluateCells();
 			GTCell cells[][] = table.getGtCells();
 			if (cells != null) {
 				for (int i = 0; i < cells.length; i++) {
@@ -779,8 +760,8 @@ public class CanvasState implements MenuIndexConstants {
 	/**
 	 * @param list the list to set
 	 */
-	public void setList(ArrayList<GTTable> list) {
-		this.list = list;
+	public void setTables(ArrayList<GTTable> tables) {
+		this.tables = tables;
 	}
 
 	/**
@@ -824,7 +805,7 @@ public class CanvasState implements MenuIndexConstants {
 		if (!undoStack.isEmpty()) {
 			GTElement e = undoStack.pop();
 			if (e instanceof GTTable) {
-				list.remove(e);
+				tables.remove(e);
 				if ((GTTable) e == currentTable) {
 					currentTable = null;
 				}
@@ -905,19 +886,5 @@ public class CanvasState implements MenuIndexConstants {
 
 	public void setRgb48Image(MemoryRGB48Image rgb48Image) {
 		this.rgb48Image = rgb48Image;
-	}
-
-	/**
-	 * @return the initialCellsMarked
-	 */
-	public boolean isInitialCellsMarked() {
-		return initialCellsMarked;
-	}
-
-	/**
-	 * @param initialCellsMarked the initialCellsMarked to set
-	 */
-	public void setInitialCellsMarked(boolean initialCellsMarked) {
-		this.initialCellsMarked = initialCellsMarked;
 	}
 }

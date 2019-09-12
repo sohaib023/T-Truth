@@ -16,7 +16,7 @@ import de.dfki.trecs.groundtruth.color.ColorModel16Bit;
  * @author Shahab
  *
  */
-public class GTTable extends BoundingBox implements GTElement {
+public class GTTable extends GTElement {
 
 	public static final int HORIZONTAL = 0;
 	public static final int VERTICAL = 1;
@@ -30,13 +30,13 @@ public class GTTable extends BoundingBox implements GTElement {
 	
 	public static final int CORNER_BOTTOM_RIGHT = 3;
 	
-	public static final int CORNER_THICKNESS = 30;
-	
-	public static final int ROW_COL_THICKNESS = 20;
-	
-	
+	public static final int CORNER_THICKNESS = 30;	
+
 	private ArrayList<GTRow> gtRows = new ArrayList<GTRow>();
 	private ArrayList<GTCol> gtCols = new ArrayList<GTCol>();
+
+	private ArrayList<GTElement> gtSpans = new ArrayList<GTElement>();
+
 	private ArrayList<GTCell> cells = new ArrayList<GTCell>();
 	private GTCell gtCells[][] = null;
 	private int index;
@@ -70,6 +70,17 @@ public class GTTable extends BoundingBox implements GTElement {
 
 	public void remove(GTCol col) {
 		gtCols.remove(col);
+	}
+	
+	public void remove(GTElement elem) {
+		if(this.getGtRows().contains(elem)) 
+			this.remove((GTRow)elem);
+		
+		else if(this.getGtCols().contains(elem)) 
+			this.remove((GTCol)elem);
+
+		else if(this.gtSpans.contains(elem)) 
+			this.removeSpan(elem);
 	}
 
 	public void assignColors() {
@@ -109,11 +120,30 @@ public class GTTable extends BoundingBox implements GTElement {
 		return null;
 	}
 
-	public void addRowSpan(Point p1, Point p2) {
+	public void addSpan(GTElement elem) {
+		this.gtSpans.add(elem);
+		this.evaluateCells();
+	}
 
+	public void removeSpan(GTElement elem) {
+		this.gtSpans.remove(elem);
+		this.evaluateCells();
+	}
+	
+	public void evaluateCells() {
+		this.evaluateInitialCells();
+		for(GTElement elem: this.gtSpans) {
+			if (elem.getClass() == GTCol.class)
+				this.addColSpan(new Point(elem.getX0(), elem.getY0()), new Point(elem.getX1(), elem.getY1()));
+			else if (elem.getClass() == GTRow.class)
+				this.addRowSpan(new Point(elem.getX0(), elem.getY0()), new Point(elem.getX1(), elem.getY1()));
+		}
+	}
+	
+	private void addRowSpan(Point p1, Point p2) {
 		GTCell startCell = getCellAtPoint(p1);
 		GTCell endCell = getCellAtPoint(p2);
-		if (startCell == null || endCell == null || startCell.getStartRow() != endCell.getStartRow()) {
+		if (startCell == null || endCell == null || startCell.getStartRow() != endCell.getStartRow() || startCell.getEndRow() != endCell.getEndRow()) {
 			System.out.println("Cant add Row Span: for " + p1 + " ,and " + p2);
 			return;
 		}
@@ -149,16 +179,36 @@ public class GTTable extends BoundingBox implements GTElement {
 			return;
 		}
 		Iterator<GTCell> iterator = cells.iterator();
+		while(iterator.hasNext()){
+			GTCell cell = iterator.next();
+			gtCells[cell.getStartRow()][cell.getStartCol()] = cell;
+		}
 		for (int i = 0; i < numRows; i++)
 			for (int j = 0; j < numCols; j++) {
-				gtCells[i][j] = iterator.next();
+				GTCell cell = gtCells[i][j];
+				if(!cell.isDontCare()) {
+					if(cell.getStartCol() != cell.getEndCol()) {
+						for(int i1=cell.getStartRow(); i1 < cell.getEndRow() + 1; i1++) {
+							GTCell cell1 = gtCells[i1][cell.getStartCol()];
+							GTCell cell2 = gtCells[i1][cell.getEndCol()];
+							this.gtSpans.add(new GTRow(cell1.getX0() + 1, cell2.getCenter().y, cell2.getX1() - 1));
+						}
+					}
+					if(cell.getStartRow() != cell.getEndRow()) {
+						GTCell cell1 = gtCells[cell.getStartRow()][cell.getStartCol()];
+						GTCell cell2 = gtCells[cell.getEndRow()][cell.getStartCol()];
+						this.gtSpans.add(new GTCol(cell2.getCenter().x, cell1.getY0() + 1, cell2.getY1() - 1));
+					}
+				}
 			}
+		this.evaluateCells();
+		
 	}
 
-	public void addColSpan(Point p1, Point p2) {
+	private void addColSpan(Point p1, Point p2) {
 		GTCell startCell = getCellAtPoint(p1);
 		GTCell endCell = getCellAtPoint(p2);
-		if (startCell == null || endCell == null || startCell.getStartCol() != endCell.getStartCol()) {
+		if (startCell == null || endCell == null || startCell.getStartCol() != endCell.getStartCol() || startCell.getEndCol() != endCell.getEndCol()) {
 			System.out.println("Cant add Col Span: for " + p1 + " ,and " + p2);
 			return;
 		}
@@ -186,13 +236,13 @@ public class GTTable extends BoundingBox implements GTElement {
 	/**
 	 * does nothing at the moment
 	 */
-	public void reevaluateCells() {
-		for (int i = 0; i < cells.size(); i++) {
+//	public void reevaluateCells() {
+//		for (int i = 0; i < cells.size(); i++) {
+//
+//		}
+//	}
 
-		}
-	}
-
-	public void evaluateInitialCells() {
+	private void evaluateInitialCells() {
 
 		Collections.sort(gtRows);
 		Collections.sort(gtCols);
@@ -232,7 +282,6 @@ public class GTTable extends BoundingBox implements GTElement {
 		}
 	}
 
-	@Override
 	public Color getForegroundColor() {
 		// TODO Auto-generated method stub
 		return foregroundColor;
@@ -357,19 +406,23 @@ public class GTTable extends BoundingBox implements GTElement {
 	
 	public GTElement getElementAtPosition(int x, int y) {
 		ArrayList<GTCol> cols = this.getGtCols();
-		for(int i=0; i<cols.size(); i++) {
-			if(x > cols.get(i).getX0() - ROW_COL_THICKNESS/2 && 
-					x < cols.get(i).getX0() + ROW_COL_THICKNESS/2) {
+		for(int i=0; i<cols.size(); i++)
+			if(cols.get(i).contains(x, y))
 				return cols.get(i);
-			}
-		}
+
 		ArrayList<GTRow> rows = this.getGtRows();
-		for(int i=0; i<rows.size(); i++) {
-			if(y > rows.get(i).getY0() - ROW_COL_THICKNESS/2 && 
-					y < rows.get(i).getY0() + ROW_COL_THICKNESS/2) {
+		for(int i=0; i<rows.size(); i++)
+			if(rows.get(i).contains(x, y))
 				return rows.get(i);
-			}
-		}
+		return null;
+	}
+	
+	public GTElement getSpanAtPosition(int x, int y) {
+		ArrayList<GTElement> elems = this.gtSpans;
+		for(int i=0; i<elems.size(); i++)
+			if(elems.get(i).contains(x, y))
+				return elems.get(i);
+
 		return null;
 	}
 	
@@ -380,5 +433,9 @@ public class GTTable extends BoundingBox implements GTElement {
 	public void setSelectedCorner(int corner) {
 		this.selectedCorner = corner;
 		System.out.println(corner);
+	}
+	
+	public ArrayList<GTElement> getGtSpans() {
+		return gtSpans;
 	}
 }

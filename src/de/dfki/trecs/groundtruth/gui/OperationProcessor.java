@@ -48,7 +48,6 @@ public abstract class OperationProcessor implements MenuIndexConstants{
 	public abstract void openGroundTruthFile(String uri);
 	public abstract void undo();
 	public abstract void redo();
-	public abstract void assignColors();
 	public abstract void exit();
 	public abstract void markRowColSpan();
 	
@@ -93,9 +92,6 @@ public abstract class OperationProcessor implements MenuIndexConstants{
 			break;
 		case MenuIndexConstants.SAVE_GT_FILE:
 			saveGroundTruthFile();
-			break;
-		case MenuIndexConstants.ASSIGN_COLORS:
-			assignColors();
 			break;
 		case MenuIndexConstants.MARK_ROW_COL_SPAN:
 			markRowColSpan();

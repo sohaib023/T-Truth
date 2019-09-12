@@ -11,13 +11,13 @@ import de.dfki.tablerecognizer.block.BoundingBox;
  * @author Shahab
  *
  */
-public class GTRow extends BoundingBox implements GTElement, Comparable {
+public class GTRow extends GTElement implements Comparable {
 
-	private GTTable table;
-	
-	public GTRow() {
-		super();
+	static {
+		THICKNESS = 20;
 	}
+	
+	private GTTable table;
 
 	public GTRow(int x0, int y0, int x1) {
 		setX0(x0);
@@ -26,9 +26,11 @@ public class GTRow extends BoundingBox implements GTElement, Comparable {
 		setY1(y0);
 	}
 	
+	public GTRow() {
+	}
+
 	@Override
 	public Color getForegroundColor() {
-		// TODO Auto-generated method stub
 		return Color.green;
 	}
 

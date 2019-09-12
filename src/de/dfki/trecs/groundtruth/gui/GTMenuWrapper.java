@@ -130,7 +130,6 @@ public class GTMenuWrapper implements MenuIndexConstants {
 		editMenu.add(items[MenuIndexConstants.MARK_ROW_COL]);
 		editMenu.add(items[MenuIndexConstants.MARK_ROW_COL_SPAN]);
 		editMenu.add(items[MenuIndexConstants.MARK_ORIENTATION]);
-		editMenu.add(items[MenuIndexConstants.ASSIGN_COLORS]);
 		editMenu.add(items[MenuIndexConstants.UNDO]);
 		editMenu.add(items[MenuIndexConstants.REDO]);
 
@@ -149,7 +148,6 @@ public class GTMenuWrapper implements MenuIndexConstants {
 		switch (menuIndex) {
 		case (MenuIndexConstants.FILE_OPEN):
 			return new MenuShortcut(KeyEvent.VK_O);
-//			case(MenuIndexConstants.FILE_EXIT): return new MenuShortcut(KeyEvent.VK_Q);
 		case (MenuIndexConstants.UNDO):
 			return new MenuShortcut(KeyEvent.VK_Z);
 		case (MenuIndexConstants.REDO):
@@ -168,8 +166,6 @@ public class GTMenuWrapper implements MenuIndexConstants {
 			return new MenuShortcut(KeyEvent.VK_M);
 		case (MenuIndexConstants.MARK_ORIENTATION):
 			return new MenuShortcut(KeyEvent.VK_G);
-		case (MenuIndexConstants.ASSIGN_COLORS):
-			return new MenuShortcut(KeyEvent.VK_E);
 		case (MenuIndexConstants.SAVE_GT_FILE):
 			return new MenuShortcut(KeyEvent.VK_S);
 		case (MenuIndexConstants.OPEN_GT_FILE):

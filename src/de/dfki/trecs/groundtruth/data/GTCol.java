@@ -13,10 +13,13 @@ import de.dfki.tablerecognizer.block.BoundingBox;
  *
  */
 
-public class GTCol extends BoundingBox implements GTElement, Comparable {
+public class GTCol extends GTElement implements Comparable {
 
-	private GTTable table;
-
+	static {
+		THICKNESS = 20;
+	}
+	private GTTable table; 
+	
 	public GTCol() {
 		super();
 	}

@@ -20,7 +20,6 @@ public interface MenuIndexConstants {
 	int MARK_TABLE = 6;
 	int MARK_ROW_COL = 7;
 	int MARK_ROW_COL_SPAN = 8;
-	int ASSIGN_COLORS = 9;
 	int ZOOM_OUT = 10;
 	int ZOOM_IN = 11;
 	int ZOOM_TO_FIT = 12;

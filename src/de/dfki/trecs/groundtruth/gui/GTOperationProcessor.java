@@ -12,7 +12,7 @@ import java.util.Date;
 import net.sourceforge.jiu.data.PixelImage;
 import net.sourceforge.jiu.gui.awt.ToolkitLoader;
 
-/**
+/**index
  * The main Ground Truth Operation processor class which performs different operations in GUI.
  * @author Shahab
  *
@@ -33,12 +33,6 @@ public class GTOperationProcessor extends OperationProcessor{
 		
 	}
 	@Override
-	public void assignColors() {
-		state.evaluateTableCells();
-		frame.getCanvas().repaint();
-		
-	}
-	@Override
 	public void saveGroundTruthFile() {
 		File file = null;
 		FileDialog fd = new FileDialog(frame,"Save Ground Truth File",FileDialog.SAVE);
@@ -48,19 +42,9 @@ public class GTOperationProcessor extends OperationProcessor{
 		}
 		String name = state.getFileName();
 		if (name != null) {
-//			fd.setName("name");
 			fd.setFile(name.substring(0, name.lastIndexOf('.')) + ".xml");
-			
 			fd.setVisible(true);
 		}
-		
-//	
-//		String fn = state.getFileName();
-//		fn = fn.substring(fn.lastIndexOf(File.separator)+1, fn.lastIndexOf('.'));
-//		fn = fn+".xml";
-//		fd.setFile(fn);
-//		fd.setVisible(true);
-		
 		
 		String dn = fd.getDirectory();
 		String fn = fd.getFile();
@@ -173,7 +157,6 @@ public class GTOperationProcessor extends OperationProcessor{
 		if (gtfile.exists() && gtfile.getAbsolutePath().endsWith("xml")){
 			state.loadGroundTruthFile(gtfile);
 			state.setGroundTruthFile(gtfile.getAbsolutePath());
-			state.setInitialCellsMarked(true);
 			//System.out.println("laoded groundtruthfile");
 			frame.getCanvas().repaint();
 			frame.updateTitle();

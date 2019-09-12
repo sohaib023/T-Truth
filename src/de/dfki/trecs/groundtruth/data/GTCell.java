@@ -4,6 +4,7 @@
 package de.dfki.trecs.groundtruth.data;
 
 import java.awt.Color;
+import java.awt.Point;
 
 import de.dfki.tablerecognizer.block.BoundingBox;
 import de.dfki.trecs.groundtruth.color.ColorModel16Bit;
@@ -16,7 +17,7 @@ import de.dfki.trecs.groundtruth.color.ColorModel16Bit;
  * @author Shahab
  *
  */
-public class GTCell extends BoundingBox implements GTElement, Comparable {
+public class GTCell extends GTElement implements Comparable {
 
 	private ColorModel16Bit color = null;
 	private Color foregroundColor;
@@ -48,10 +49,6 @@ public class GTCell extends BoundingBox implements GTElement, Comparable {
 			return -1;
 		else
 			return 1;
-
-	}
-
-	public GTCell() {
 
 	}
 
@@ -92,6 +89,9 @@ public class GTCell extends BoundingBox implements GTElement, Comparable {
 	 */
 	public GTCell(int x0, int y0, int x1, int y1) {
 		super(x0, y0, x1, y1);
+	}
+
+	public GTCell() {
 	}
 
 	/**
@@ -197,6 +197,10 @@ public class GTCell extends BoundingBox implements GTElement, Comparable {
 	 */
 	public void setTableIndex(int tableIndex) {
 		this.tableIndex = tableIndex;
+	}
+	
+	public Point getCenter() {
+		return new Point((this.getX0() + this.getX1()) / 2, (this.getY0() + this.getY1()) / 2);
 	}
 
 }

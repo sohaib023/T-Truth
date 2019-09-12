@@ -126,6 +126,8 @@ public class GTGui extends Frame implements ActionListener, ComponentListener, K
 		addKeyListener(this);
 
 		scrollPane = new ScrollPane(ScrollPane.SCROLLBARS_AS_NEEDED);
+		scrollPane.getVAdjustable().setBlockIncrement(10);
+		scrollPane.getVAdjustable().setUnitIncrement(4);
 
 		this.state = state;
 		canvas = new GTCanvas(scrollPane, state);
@@ -321,6 +323,9 @@ public class GTGui extends Frame implements ActionListener, ComponentListener, K
 			// state.zoomSetOriginalSize();
 			Image awtImage = ImageCreator.convertToAwtImage(image, RGBA.DEFAULT_ALPHA);
 			scrollPane = new ScrollPane(ScrollPane.SCROLLBARS_AS_NEEDED);
+
+			scrollPane.getVAdjustable().setBlockIncrement(image.getHeight()/150);
+			scrollPane.getVAdjustable().setUnitIncrement(image.getHeight()/100);
 
 			canvas = new GTCanvas(scrollPane, state);
 			canvas.setMainGui(this);
@@ -520,12 +525,15 @@ public class GTGui extends Frame implements ActionListener, ComponentListener, K
 						state.setCurrentTable(null);
 						canvas.repaint();						
 					}
-					else if(state.getCurrentElement()!=null && state.getMarkType() == CanvasState.MARK_ROW_COL){
-						if(table.getGtRows().contains(state.getCurrentElement())) 
-							table.remove((GTRow)state.getCurrentElement());
-						else if(table.getGtCols().contains(state.getCurrentElement())) 
-							table.remove((GTCol)state.getCurrentElement());
-						state.setCurrentElement(null);
+					else if(state.getCurrentElement()!=null){
+						if (state.getMarkType() == CanvasState.MARK_ROW_COL) {
+							table.remove(state.getCurrentElement());
+							state.setCurrentElement(null);
+						}
+						else if (state.getMarkType() == CanvasState.MARK_ROW_COL_SPAN) {
+							table.removeSpan(state.getCurrentElement());
+							state.setCurrentElement(null);
+						}
 						canvas.repaint();
 					}
 				}
@@ -576,6 +584,7 @@ public class GTGui extends Frame implements ActionListener, ComponentListener, K
 		state.markRowColumns();
 		setCrosshairCursor();
 		updateStatusBar();
+		canvas.repaint();
 	}
 
 	private void setDefaultCursor() {
