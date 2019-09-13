@@ -214,12 +214,12 @@ public class CanvasState implements MenuIndexConstants {
 
 	}
 
-	public void updateModifiedFlag() {
-		if (undoStack.size() > 0) {
-			modified = true;
-		} else if (undoStack.size() == 0)
-			modified = false;
-	}
+//	public void updateModifiedFlag() {
+//		if (undoStack.size() > 0) {
+//			modified = true;
+//		} else if (undoStack.size() == 0)
+//			modified = false;
+//	}
 
 	public void addGTCol(GTCol col) {
 		currentTable.addCols(col);
@@ -235,23 +235,24 @@ public class CanvasState implements MenuIndexConstants {
 	}
 
 	public void addGTTable(GTTable table) {
+		this.setModified(true);
 		tables.add(table);
 		addUndoElement(table);
 	}
 
 	public void removeGTTable(GTTable table) {
+		this.setModified(true);
 		tables.remove(table);
 	}
 
 	public void addRedoElement(GTElement e) {
 		redoStack.add(e);
-		updateModifiedFlag();
+//		updateModifiedFlag();
 	}
 
 	public void addUndoElement(GTElement e) {
 		undoStack.push(e);
-		updateModifiedFlag();
-
+//		updateModifiedFlag();
 	}
 
 
@@ -548,6 +549,7 @@ public class CanvasState implements MenuIndexConstants {
 			tables.add(table);
 
 		}
+		this.setModified(false);
 	}
 
 	private void loadGTElementFromNode(BoundingBox box, Node node) {
@@ -567,6 +569,8 @@ public class CanvasState implements MenuIndexConstants {
 			table.setIndex(index);
 			index++;
 		}
+		if(this.getCurrentTable() != null)
+			this.getCurrentTable().evaluateCells();
 	}
 
 	public void markRowColumns() {
@@ -678,7 +682,7 @@ public class CanvasState implements MenuIndexConstants {
 
 			undoStack.clear();
 			redoStack.clear();
-			updateModifiedFlag();
+//			updateModifiedFlag();
 		} catch (Exception ex) {
 			System.out.println("Error saving groundtruth");
 		}
@@ -734,14 +738,18 @@ public class CanvasState implements MenuIndexConstants {
 		}
 	}
 
-	public void close() {
-		if (isModified()) {
-
-		}
+	public boolean isModified() {
+		for(GTTable table: this.getTables())
+			if(table.isModified())
+				return table.isModified();
+		return modified;
 	}
 
-	public boolean isModified() {
-		return modified;
+	public void setModified(boolean modified) {
+		if(modified==false)
+			for(GTTable table: this.getTables())
+				table.setModified(modified);
+		this.modified = modified;
 	}
 
 	/**

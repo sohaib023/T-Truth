@@ -24,7 +24,7 @@ public abstract class OperationProcessor implements MenuIndexConstants{
 	 */
 	public abstract void fileOpen(String uri);
 	
-	public abstract void openImageDirectory();
+	public abstract void openImageDirectory(boolean moveNext);
 	
 	/**
 	 * close the file currently open in the applicaiton.
@@ -58,7 +58,7 @@ public abstract class OperationProcessor implements MenuIndexConstants{
 	public void process(int index){
 		switch (index){
 		case MenuIndexConstants.FILE_OPEN_DIR:
-			openImageDirectory();
+			openImageDirectory(true);
 			break;
 		case MenuIndexConstants.OPEN_GT_DIR:
 			openGroundTruthDirectory();

@@ -32,6 +32,7 @@ public class GTTable extends GTElement {
 	
 	public static final int CORNER_THICKNESS = 30;	
 
+	private boolean isModified = false;
 	private ArrayList<GTRow> gtRows = new ArrayList<GTRow>();
 	private ArrayList<GTCol> gtCols = new ArrayList<GTCol>();
 
@@ -57,22 +58,27 @@ public class GTTable extends GTElement {
 	}
 
 	public void addRow(GTRow row) {
+		this.setModified(true);
 		gtRows.add(row);
 	}
 
 	public void addCols(GTCol col) {
+		this.setModified(true);
 		gtCols.add(col);
 	}
 
 	public void remove(GTRow row) {
+		this.setModified(true);
 		gtRows.remove(row);
 	}
 
 	public void remove(GTCol col) {
+		this.setModified(true);
 		gtCols.remove(col);
 	}
 	
 	public void remove(GTElement elem) {
+		this.setModified(true);
 		if(this.getGtRows().contains(elem)) 
 			this.remove((GTRow)elem);
 		
@@ -121,11 +127,13 @@ public class GTTable extends GTElement {
 	}
 
 	public void addSpan(GTElement elem) {
+		this.setModified(true);
 		this.gtSpans.add(elem);
 		this.evaluateCells();
 	}
 
 	public void removeSpan(GTElement elem) {
+		this.setModified(true);
 		this.gtSpans.remove(elem);
 		this.evaluateCells();
 	}
@@ -328,32 +336,14 @@ public class GTTable extends GTElement {
 	}
 
 	/**
-	 * @param gtRows the gtRows to set
-	 */
-	public void setGtRows(ArrayList<GTRow> gtRows) {
-		this.gtRows = gtRows;
-	}
-
-	/**
 	 * @return the gtCols
 	 */
 	public ArrayList<GTCol> getGtCols() {
 		return gtCols;
 	}
 
-	/**
-	 * @param gtCols the gtCols to set
-	 */
-	public void setGtCols(ArrayList<GTCol> gtCols) {
-		this.gtCols = gtCols;
-	}
-
 	public GTCell[][] getGtCells() {
 		return gtCells;
-	}
-
-	public void setGtCells(GTCell[][] gtCells) {
-		this.gtCells = gtCells;
 	}
 
 	public int getOrientation() {
@@ -361,6 +351,7 @@ public class GTTable extends GTElement {
 	}
 	
 	public void setOrientation(int orientation) {
+		this.setModified(true);
 		if (orientation == HORIZONTAL)
 			this.foregroundColor = Color.RED;
 		else if (orientation == VERTICAL)
@@ -401,6 +392,7 @@ public class GTTable extends GTElement {
 	}
 	
 	public void moveTo(Point p1, Point p2) {
+		this.setModified(true);
 		ArrayList<GTCol> cols = this.getGtCols();
 		for(int i=0; i<cols.size(); i++) {
 			GTCol col = cols.get(i);
@@ -470,5 +462,13 @@ public class GTTable extends GTElement {
 	
 	public ArrayList<GTElement> getGtSpans() {
 		return gtSpans;
+	}
+
+	public boolean isModified() {
+		return isModified;
+	}
+
+	public void setModified(boolean isModified) {
+		this.isModified = isModified;
 	}
 }

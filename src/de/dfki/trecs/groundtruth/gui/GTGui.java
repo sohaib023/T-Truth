@@ -550,7 +550,7 @@ public class GTGui extends Frame implements ActionListener, ComponentListener, K
 	public void changeImage(int key) {
 		if(state.getImageDirectory() == null) {
 			this.showWarningBox("Select image directory.");
-			processor.openImageDirectory();
+			processor.openImageDirectory(false);
 		}
 		if(state.getXmlDirectory() == null) {
 			this.showWarningBox("Select ground truth directory.");
@@ -574,6 +574,7 @@ public class GTGui extends Frame implements ActionListener, ComponentListener, K
 				this.showWarningBox("First Image");
 			else if(key == KeyEvent.VK_RIGHT)
 				this.showWarningBox("Last Image");
+			return;
 		}
 		
 		this.processor.fileOpen(new File(state.getImageDirectory(), state.getFileName()).getAbsolutePath());

@@ -5,6 +5,7 @@ package de.dfki.trecs.groundtruth.gui;
 
 import java.awt.FileDialog;
 import java.awt.Frame;
+import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.util.Date;
@@ -36,10 +37,10 @@ public class GTOperationProcessor extends OperationProcessor{
 	}
 	@Override
 	public void saveGroundTruthFile() {	
-		String dn = state.getXmlDirectory() ;
+		String dn = state.getXmlDirectory();
 		String fn = state.getFileName().substring(0, state.getFileName().lastIndexOf('.')) + ".xml";
 		
-		if (fn == null || dn == null)
+		if (fn == null || dn == null || state.isModified() == false)
 		{
 			return;
 		}
@@ -49,7 +50,7 @@ public class GTOperationProcessor extends OperationProcessor{
 	}
 	
 	@Override
-	public void openImageDirectory() {
+	public void openImageDirectory(boolean moveNext) {
 		JFileChooser chooser = new JFileChooser();
 		chooser.setDialogTitle("Open Image Directory");
 		chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
@@ -59,6 +60,8 @@ public class GTOperationProcessor extends OperationProcessor{
 			if(imgDir.isDirectory())
 				state.setImageDirectory(imgDir.getAbsolutePath());
 		}				
+		if(moveNext)
+			this.frame.changeImage(KeyEvent.VK_RIGHT);
 	}
 	
 	@Override
@@ -123,14 +126,9 @@ public class GTOperationProcessor extends OperationProcessor{
 	
 	@Override
 	public void openGroundTruthFile(String uri) {
-		// TODO Auto-generated method stub
-	//	String gtfilename = state.getFileName();
-//		gtfilename = gtfilename.substring(0,gtfilename.lastIndexOf('.'))+".xml";
-		
 		File gtfile = null;
 		gtfile = new File(uri);
 		
-	//	gtfile.getAbsolutePath().substring(beginIndex, endIndex)
 		if (gtfile.exists() && gtfile.getAbsolutePath().endsWith("xml")){
 			state.loadGroundTruthFile(gtfile);
 			state.setGroundTruthFile(gtfile.getAbsolutePath());
@@ -140,6 +138,7 @@ public class GTOperationProcessor extends OperationProcessor{
 		}	
 		else
 			frame.showWarningBox("Can't load the ground truth file: "+gtfile.getAbsolutePath());
+		state.setModified(false);
 	}
 	@Override
 	public void exit() {
