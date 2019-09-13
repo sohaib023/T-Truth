@@ -13,9 +13,9 @@ public interface MenuIndexConstants {
 
 	int FILE = 0;
 	int FILE_OPEN_DIR = 1;
-	int FILE_SAVE = 2;
-	int FILE_SAVE_AS = 3;
-	int FILE_CLOSE = 4;
+//	int FILE_SAVE = 2;
+//	int FILE_SAVE_AS = 3;
+//	int FILE_CLOSE = 4;
 	int EXIT = 5;
 	int MARK_TABLE = 6;
 	int MARK_ROW_COL = 7;
@@ -24,8 +24,8 @@ public interface MenuIndexConstants {
 	int ZOOM_IN = 11;
 	int ZOOM_TO_FIT = 12;
 	int EDIT = 13;
-	int UNDO = 14;
-	int REDO = 15;
+//	int UNDO = 14;
+//	int REDO = 15;
 	int VIEW = 16;
 	int SAVE_GT_FILE = 17;
 	int OPEN_GT_DIR = 18;

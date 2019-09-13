@@ -244,12 +244,12 @@ public class GTCanvas extends Canvas implements MouseMotionListener, MouseListen
 			Point p = translateToScreenPoint(new Point(table.getX0(), table.getY0()));
 			Point p2 = translateToScreenPoint(new Point(table.getX1(), table.getY1()));
 			Color color = table.getForegroundColor();
-			Color tmpColor = new Color(color.getRed(), color.getGreen(), color.getBlue(), 70);
+			Color tmpColor = new Color(color.getRed()/2, color.getGreen()/2, color.getBlue()/2, 130);
 			g.setColor(tmpColor);
 			g.fillRect(p.x, p.y, p2.x - p.x, p2.y - p.y);
 			if(state.getMarkType() == CanvasState.MARK_TABLE) {
 				color = Color.yellow;
-				tmpColor = new Color(color.getRed(), color.getGreen(), color.getBlue(), 130);
+				tmpColor = new Color(color.getRed(), color.getGreen(), color.getBlue(), 170);
 				g.setColor(tmpColor);
 				int thickness = (int) (GTTable.CORNER_THICKNESS * zoomFactorX);
 				g.fillRect(p.x, p.y, thickness, thickness);
@@ -277,68 +277,70 @@ public class GTCanvas extends Canvas implements MouseMotionListener, MouseListen
 				Point p = translateToScreenPoint(new Point(table.getX0(), table.getY0()));
 				Point p2 = translateToScreenPoint(new Point(table.getX1(), table.getY1()));
 				Color color = table.getForegroundColor();
-				Color tmpColor = new Color(color.getRed(), color.getGreen(), color.getBlue(), 70);
+				Color tmpColor = new Color(2*color.getRed()/3, 2*color.getGreen()/3, 2*color.getBlue()/3, 100);
 				g.setColor(tmpColor);
 				g.fillRect(p.x, p.y, p2.x - p.x, p2.y - p.y);
 				continue;
 			}
 			else {
-				drawTable(table, g);
-			}
-
-			if (state.getMarkType() == CanvasState.MARK_ROW_COL_SPAN && table==state.getCurrentTable()) {
-				GTCell cells[][] = table.getGtCells();
-				if (cells != null) {
-					Color color = new Color(255, 0, 0, 60);
-					Color multiColor = new Color(0, 128, 128, 60);
-	
-					Color rowSpanColor = new Color(0, 255, 0, 100);
-					Color colSpanColor = new Color(0, 0, 255, 100);
-					for (GTCell cell : table.getCells()) {
-						if (!cell.isDontCare()) {
-							Point p = translateToScreenPoint(new Point(cell.getX0(), cell.getY0()));
-							Point p2 = translateToScreenPoint(new Point(cell.getX1(), cell.getY1()));
-							paintRectangleBoundary(p.x, p.y, p2.x, p2.y, Color.BLUE, g, 3);
-							if (cell.getEndCol() > cell.getStartCol() && cell.getEndRow() > cell.getStartRow())
-								g.setColor(multiColor);
-							else if (cell.getEndRow() > cell.getStartRow())
-								g.setColor(rowSpanColor);
-							else if (cell.getEndCol() > cell.getStartCol())
-								g.setColor(colSpanColor);
-							else
-								g.setColor(color);
-							g.fillRect(p.x, p.y, p2.x - p.x, p2.y - p.y);
+				if (state.getMarkType() == CanvasState.MARK_ROW_COL_SPAN) {
+					GTCell cells[][] = table.getGtCells();
+					if (cells != null) {
+						Color color = new Color(160, 0, 0, 40);
+						Color multiColor = new Color(0, 80, 80, 100);
+		
+						Color rowSpanColor = new Color(0, 160, 0, 130);
+						Color colSpanColor = new Color(0, 0, 160, 130);
+						for (GTCell cell : table.getCells()) {
+							if (!cell.isDontCare()) {
+								Point p = translateToScreenPoint(new Point(cell.getX0(), cell.getY0()));
+								Point p2 = translateToScreenPoint(new Point(cell.getX1(), cell.getY1()));
+								paintRectangleBoundary(p.x, p.y, p2.x, p2.y, Color.CYAN, g, 3);
+								if (cell.getEndCol() > cell.getStartCol() && cell.getEndRow() > cell.getStartRow())
+									g.setColor(multiColor);
+								else if (cell.getEndRow() > cell.getStartRow())
+									g.setColor(rowSpanColor);
+								else if (cell.getEndCol() > cell.getStartCol())
+									g.setColor(colSpanColor);
+								else
+									g.setColor(color);
+								if(table == state.getCurrentTable())
+									g.fillRect(p.x, p.y, p2.x - p.x, p2.y - p.y);
+							}
+						}
+					}
+					if(table == state.getCurrentTable()){
+						ArrayList<GTElement> elems = table.getGtSpans();
+						for (GTElement elem : elems) {
+							g.setColor(elem.getForegroundColor());
+							Point p = translateToScreenPoint(new Point(elem.getX0(), elem.getY0()));
+							Point p2 = translateToScreenPoint(new Point(elem.getX1(), elem.getY1()));
+							this.drawLine(p.x, p.y, p2.x, p2.y, elem.getForegroundColor(), 3, g);
+		
 						}
 					}
 				}
-				ArrayList<GTElement> elems = table.getGtSpans();
-				for (GTElement elem : elems) {
-					g.setColor(elem.getForegroundColor());
-					Point p = translateToScreenPoint(new Point(elem.getX0(), elem.getY0()));
-					Point p2 = translateToScreenPoint(new Point(elem.getX1(), elem.getY1()));
-					this.drawLine(p.x, p.y, p2.x, p2.y, elem.getForegroundColor(), 3, g);
+				else {
+					ArrayList<GTRow> rows = table.getGtRows();
+					for (GTRow row : rows) {
+						g.setColor(row.getForegroundColor());
+						Point p = translateToScreenPoint(new Point(row.getX0(), row.getY0()));
+						Point p2 = translateToScreenPoint(new Point(row.getX1(), row.getY1()));
+						this.drawLine(p.x, p.y, p2.x, p2.y, row.getForegroundColor(), 3, g);
 
+					}
+					ArrayList<GTCol> cols = table.getGtCols();
+					for (GTCol col : cols) {
+						g.setColor(col.getForegroundColor());
+						Point p = translateToScreenPoint(new Point(col.getX0(), col.getY0()));
+						Point p2 = translateToScreenPoint(new Point(col.getX1(), col.getY1()));
+						this.drawLine(p.x, p.y, p2.x, p2.y, col.getForegroundColor(), 3, g);
+					}
 				}
-			}
-			else {
-				ArrayList<GTRow> rows = table.getGtRows();
-				for (GTRow row : rows) {
-					g.setColor(row.getForegroundColor());
-					Point p = translateToScreenPoint(new Point(row.getX0(), row.getY0()));
-					Point p2 = translateToScreenPoint(new Point(row.getX1(), row.getY1()));
-					this.drawLine(p.x, p.y, p2.x, p2.y, row.getForegroundColor(), 3, g);
 
-				}
-				ArrayList<GTCol> cols = table.getGtCols();
-				for (GTCol col : cols) {
-					g.setColor(col.getForegroundColor());
-					Point p = translateToScreenPoint(new Point(col.getX0(), col.getY0()));
-					Point p2 = translateToScreenPoint(new Point(col.getX1(), col.getY1()));
-					this.drawLine(p.x, p.y, p2.x, p2.y, col.getForegroundColor(), 3, g);
-				}
-			}
+				drawTable(table, g);
+			}		
 		}
-
 	}
 
 	private void drawTable(GTTable table, Graphics g) {
@@ -690,7 +692,6 @@ public class GTCanvas extends Canvas implements MouseMotionListener, MouseListen
 					GTTable table = state.getTable(p.x, p.y);
 					if (table != null) {
 						state.setCurrentTable(table);
-						table.evaluateCells();
 						repaint();
 					}
 				} else {
@@ -719,7 +720,6 @@ public class GTCanvas extends Canvas implements MouseMotionListener, MouseListen
 						repaint();
 					} else if (table != null) {
 						state.setCurrentTable(table);
-						table.evaluateCells();
 						state.setCurrentElement(null);
 						repaint();
 					}

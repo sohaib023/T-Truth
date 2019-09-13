@@ -41,7 +41,7 @@ public class GTTable extends GTElement {
 	private ArrayList<GTCell> cells = new ArrayList<GTCell>();
 	private GTCell gtCells[][] = null;
 	private int index;
-	private Color foregroundColor = Color.BLUE;
+	private Color foregroundColor = new Color(64, 224, 208);
 	private int orientation = UNKNOWN;
 	private int selectedCorner = -1;
 	
@@ -55,6 +55,7 @@ public class GTTable extends GTElement {
 
 	public GTTable(int x0, int y0, int x1, int y1) {
 		super(x0, y0, x1, y1);
+		this.setOrientation(UNKNOWN);
 	}
 
 	public void addRow(GTRow row) {
@@ -140,20 +141,32 @@ public class GTTable extends GTElement {
 	
 	public void evaluateCells() {
 		this.evaluateInitialCells();
+		boolean[] returnVal = new boolean[this.gtSpans.size()];
+		int i=0;
 		for(GTElement elem: this.gtSpans) {
 			if (elem.getClass() == GTCol.class)
-				this.addColSpan(new Point(elem.getX0(), elem.getY0()), new Point(elem.getX1(), elem.getY1()));
+				returnVal[i] = this.addColSpan(new Point(elem.getX0(), elem.getY0()), new Point(elem.getX1(), elem.getY1()));
 			else if (elem.getClass() == GTRow.class)
-				this.addRowSpan(new Point(elem.getX0(), elem.getY0()), new Point(elem.getX1(), elem.getY1()));
+				returnVal[i] = this.addRowSpan(new Point(elem.getX0(), elem.getY0()), new Point(elem.getX1(), elem.getY1()));
+			i++;
 		}
+		for(int j=this.gtSpans.size()-1; j>=0; j--)
+			if(returnVal[j] == false)
+				this.gtSpans.remove(j);
 	}
 	
-	private void addRowSpan(Point p1, Point p2) {
+	private boolean addRowSpan(Point p1, Point p2) {
 		GTCell startCell = getCellAtPoint(p1);
 		GTCell endCell = getCellAtPoint(p2);
-		if (startCell == null || endCell == null || startCell.getStartRow() != endCell.getStartRow() || startCell.getEndRow() != endCell.getEndRow()) {
+		if (
+				startCell == null || 
+				endCell == null || 
+				startCell.getStartRow() != endCell.getStartRow() || 
+				startCell.getEndRow() != endCell.getEndRow() ||
+				startCell == endCell
+				) {
 			System.out.println("Cant add Row Span: for " + p1 + " ,and " + p2);
-			return;
+			return false;
 		}
 		startCell.setEndCol(endCell.getEndCol());
 		for (int i = startCell.getStartCol() + 1; i <= endCell.getEndCol(); i++) {
@@ -170,6 +183,7 @@ public class GTTable extends GTElement {
 
 		}
 		startCell.assumeColor();
+		return true;
 	}
 
 	/**
@@ -246,12 +260,18 @@ public class GTTable extends GTElement {
 		
 	}
 
-	private void addColSpan(Point p1, Point p2) {
+	private boolean addColSpan(Point p1, Point p2) {
 		GTCell startCell = getCellAtPoint(p1);
 		GTCell endCell = getCellAtPoint(p2);
-		if (startCell == null || endCell == null || startCell.getStartCol() != endCell.getStartCol() || startCell.getEndCol() != endCell.getEndCol()) {
+		if (
+				startCell == null || 
+				endCell == null || 
+				startCell.getStartCol() != endCell.getStartCol() || 
+				startCell.getEndCol() != endCell.getEndCol() ||
+				startCell == endCell
+				) {
 			System.out.println("Cant add Col Span: for " + p1 + " ,and " + p2);
-			return;
+			return false;
 		}
 		startCell.setEndRow(endCell.getEndRow());
 		for (int i = startCell.getStartRow() + 1; i <= endCell.getEndRow(); i++) {
@@ -271,7 +291,7 @@ public class GTTable extends GTElement {
 
 		}
 		startCell.assumeColor();
-
+		return true;
 	}
 
 	/**
@@ -357,7 +377,7 @@ public class GTTable extends GTElement {
 		else if (orientation == VERTICAL)
 			this.foregroundColor = Color.GREEN;
 		else
-			this.foregroundColor = Color.BLUE;
+			this.foregroundColor = new Color(0, 206, 209);
 		this.orientation = orientation;
 	}
 	

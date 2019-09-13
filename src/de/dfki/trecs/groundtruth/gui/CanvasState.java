@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.Locale;
 import java.util.Stack;
 
+import javax.swing.DefaultListModel;
 import javax.swing.JOptionPane;
 
 import org.w3c.dom.Element;
@@ -103,9 +104,8 @@ public class CanvasState implements MenuIndexConstants {
 	 */
 	public static final int DEFAULT_INTERPOLATION = INTERPOLATION_NEAREST_NEIGHBOR;
 	private String imageDirectory;
-	private ArrayList<String> imageList;
+	private DefaultListModel<String> imageList = new DefaultListModel<String>();
 	private String xmlDirectory;
-	private ArrayList<String> xmlList;
 	private String currentFileName;
 	private PixelImage currentImage;
 	private MemoryRGB48Image rgb48Image = null;
@@ -568,6 +568,7 @@ public class CanvasState implements MenuIndexConstants {
 		for(GTTable table: this.getTables()) {
 			table.setIndex(index);
 			index++;
+			table.evaluateCells();
 		}
 		if(this.getCurrentTable() != null)
 			this.getCurrentTable().evaluateCells();
@@ -889,7 +890,9 @@ public class CanvasState implements MenuIndexConstants {
 
 	public void setImageDirectory(String imageDirectory) {
 		this.imageDirectory = imageDirectory;
-		this.imageList = new ArrayList<String>();
+		this.imageList.clear();
+		
+		ArrayList<String> imageArray = new ArrayList<String>();
 
 
 		File[] files = new File(this.imageDirectory).listFiles();
@@ -900,10 +903,14 @@ public class CanvasState implements MenuIndexConstants {
 		    		file.getName().toLowerCase().endsWith("jpg") ||
 		    		file.getName().toLowerCase().endsWith("jpeg")
 		    				)) {
-		        this.imageList.add(file.getName());
+		    	imageArray.add(file.getName());
 		    }
 		}
-		this.imageList.sort(String::compareToIgnoreCase);
+		imageArray.sort(String::compareToIgnoreCase);
+		
+		for(String file: imageArray)
+			this.imageList.addElement(file);
+		
 		this.setFileName(null);
 	}
 
@@ -913,16 +920,6 @@ public class CanvasState implements MenuIndexConstants {
 
 	public void setXmlDirectory(String xmlDirectory) {
 		this.xmlDirectory = xmlDirectory;
-		this.xmlList = new ArrayList<String>();
-
-
-		File[] files = new File(this.xmlDirectory).listFiles();
-
-		for (File file : files) {
-		    if (file.isFile() && file.getName().toLowerCase().endsWith("xml")) {
-		        this.xmlList.add(file.getName());
-		    }
-		}
 	}
 
 	public void nextImage() {
@@ -963,5 +960,9 @@ public class CanvasState implements MenuIndexConstants {
 		
 		this.clear();
 		this.currentFileName = filename;
+	}
+	
+	public DefaultListModel<String> getImageList() {
+		return imageList;
 	}
 }

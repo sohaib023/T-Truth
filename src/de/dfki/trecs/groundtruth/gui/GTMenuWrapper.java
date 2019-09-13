@@ -118,7 +118,7 @@ public class GTMenuWrapper implements MenuIndexConstants {
 		// fileMenu.add(items[MenuIndexConstants.FILE_SAVE]);
 		// fileMenu.add(items[MenuIndexConstants.FILE_SAVE_AS]);
 		fileMenu.add(items[MenuIndexConstants.SAVE_GT_FILE]);
-		fileMenu.add(items[MenuIndexConstants.FILE_CLOSE]);
+//		fileMenu.add(items[MenuIndexConstants.FILE_CLOSE]);
 		fileMenu.add(items[MenuIndexConstants.EXIT]);
 
 		menuBar.add(fileMenu);
@@ -130,8 +130,8 @@ public class GTMenuWrapper implements MenuIndexConstants {
 		editMenu.add(items[MenuIndexConstants.MARK_ROW_COL]);
 		editMenu.add(items[MenuIndexConstants.MARK_ROW_COL_SPAN]);
 		editMenu.add(items[MenuIndexConstants.MARK_ORIENTATION]);
-		editMenu.add(items[MenuIndexConstants.UNDO]);
-		editMenu.add(items[MenuIndexConstants.REDO]);
+//		editMenu.add(items[MenuIndexConstants.UNDO]);
+//		editMenu.add(items[MenuIndexConstants.REDO]);
 
 		Menu viewMenu = new Menu(menuLabels[MenuIndexConstants.VIEW]);
 		viewMenu.add(items[MenuIndexConstants.ZOOM_IN]);
@@ -148,10 +148,10 @@ public class GTMenuWrapper implements MenuIndexConstants {
 		switch (menuIndex) {
 		case (MenuIndexConstants.FILE_OPEN_DIR):
 			return new MenuShortcut(KeyEvent.VK_O);
-		case (MenuIndexConstants.UNDO):
-			return new MenuShortcut(KeyEvent.VK_Z);
-		case (MenuIndexConstants.REDO):
-			return new MenuShortcut(KeyEvent.VK_Y);
+//		case (MenuIndexConstants.UNDO):
+//			return new MenuShortcut(KeyEvent.VK_Z);
+//		case (MenuIndexConstants.REDO):
+//			return new MenuShortcut(KeyEvent.VK_Y);
 		case (MenuIndexConstants.ZOOM_IN):
 			return new MenuShortcut(KeyEvent.VK_1);
 		case (MenuIndexConstants.ZOOM_OUT):

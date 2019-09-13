@@ -63,9 +63,9 @@ public abstract class OperationProcessor implements MenuIndexConstants{
 		case MenuIndexConstants.OPEN_GT_DIR:
 			openGroundTruthDirectory();
 			break;
-		case MenuIndexConstants.FILE_CLOSE:
-			fileClose();
-			break;
+//		case MenuIndexConstants.FILE_CLOSE:
+//			fileClose();
+//			break;
 //		case MenuIndexConstants.FILE_SAVE_AS:
 //			fileSaveAs();
 //			break;
@@ -81,12 +81,12 @@ public abstract class OperationProcessor implements MenuIndexConstants{
 		case MenuIndexConstants.MARK_TABLE:
 			markTable();
 			break;
-		case MenuIndexConstants.UNDO:
-			undo();
-			break;
-		case MenuIndexConstants.REDO:
-			redo();
-			break;
+//		case MenuIndexConstants.UNDO:
+//			undo();
+//			break;
+//		case MenuIndexConstants.REDO:
+//			redo();
+//			break;
 		case MenuIndexConstants.MARK_ROW_COL:
 			markRowColumns();
 			break;

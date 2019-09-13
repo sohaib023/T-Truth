@@ -27,7 +27,9 @@ import java.io.FilenameFilter;
 import java.io.PrintWriter;
 import java.util.Date;
 
+import javax.swing.DefaultListModel;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
@@ -67,7 +69,8 @@ public class GTGui extends Frame implements ActionListener, ComponentListener, K
 	private JLabel statusBar;
 	private JLabel helpBar;
 	private JLabel infoBar;
-
+//	private JList<String> imgList; 
+	
 	private boolean previewMode = false;
 
 	private String workDir = null;
@@ -144,6 +147,8 @@ public class GTGui extends Frame implements ActionListener, ComponentListener, K
 		statusBar.setFont(new Font("Arial", Font.BOLD, 30));
 		helpBar.setFont(new Font("Arial", Font.PLAIN, 15));
 		
+//        imgList = new JList<String>(state.getImageList());
+		
 		addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent e) {
 				processor.exit();
@@ -158,6 +163,7 @@ public class GTGui extends Frame implements ActionListener, ComponentListener, K
 		p.add(statusBar, BorderLayout.NORTH);
 		p.add(helpBar, BorderLayout.SOUTH);
 		add(p, BorderLayout.NORTH);
+//		add(imgList, BorderLayout.WEST);
 		add(infoBar, BorderLayout.SOUTH);
 
 		logUser = Boolean.parseBoolean(System.getProperty(GTGui.LOG_USER, "false"));
@@ -393,22 +399,44 @@ public class GTGui extends Frame implements ActionListener, ComponentListener, K
 	public void updateStatusBar() {
 		String statusBarText = "";
 		String helpBarText = "";
+		String tab = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
 		switch (state.getMarkType()) {
 		case CanvasState.MARK_TABLE:
 			statusBarText = "Marking Tables";
-			helpBarText = "Click and Drag mouse to mark table -- OR -- Click on a table to select it.";
+			helpBarText = "<html>"
+					+ "-Click and Drag mouse to mark table<br>"
+					+ "-Click on a table to select it.<br>"
+					+ tab + "-Drag any of the yellow-highlighted corners to resize the table.<br>"
+					+ tab + "-Press DELETE key to remove the table.<br>"
+					+ "</html";
 			break;
 		case CanvasState.MARK_ROW_COL:
 			statusBarText = "Marking Rows/Columns";
-			helpBarText = "Left click to mark Rows - Right Click to mark Columns -- OR -- Click on already marked row/column to select it.";
+			helpBarText = "<html>"
+					+ "-Click on a table to select it for marking Rows/Columns<br>"
+					+ tab + "-Press LEFT Mouse Button inside the table to mark a ROW.<br>"
+					+ tab + "-Press RIGHT Mouse Button inside the table to mark a COLUMN.<br>"
+					+ tab + "-Click on an existing Row/Column to select it (Selected element will be highlighted yellow).<br>"
+					+ tab + tab + "-Press DELETE key to remove the Row/Column.<br>"
+					+ "</html";
 			break;
 		case CanvasState.MARK_ROW_COL_SPAN:
 			statusBarText = "Marking Rows/Columns Span";
-			helpBarText = "(Left-Click for row-span - Right-Click for column-span) and Drag mouse to mark-span/merge-cells";
+			helpBarText = "<html>"
+					+ "-Click on a table to select it for marking Row/Column spans<br>"
+					+ tab + "-Press LEFT Mouse Button and drag mouse to mark a ROW Span (merge horizontally adjacent cells).<br>"
+					+ tab + "-Press RIGHT Mouse Button and drag mouse to mark a COLUMN Span (merge vertically adjacent cells).<br>"
+					+ tab + "-Click on an existing Row/Column Span to select it (Selected element will be highlighted yellow).<br>"
+					+ tab + tab + "-Press DELETE key to remove the Row/Column Span (split up the cells).<br>"
+					+ "</html";
 			break;
 		case CanvasState.MARK_ORIENTATION:
 			statusBarText = "Marking Orientation of Tables";
-			helpBarText = "Left Click to mark Horizontal (Red) - Right Click to mark Vertical (Green)";
+			helpBarText = "<html>"
+					+ "-LEFT Click on a table to mark it as HORIZONTAL (be highlighted as RED)<br>"
+					+ "-RIGHT Click on a table to mark it as VERTICAL (highlighted as GREEN)<br>"
+					+ "-Unmarked tables will be highlighted as BLUE<br>"
+					+ "</html";
 			break;
 
 		}
@@ -585,6 +613,7 @@ public class GTGui extends Frame implements ActionListener, ComponentListener, K
 				).getAbsolutePath()
 				);
 		
+//		this.imgList.setSelectedIndex(state.getImageList().indexOf(state.getFileName()));
 		this.canvas.requestFocusInWindow();
 	}
 

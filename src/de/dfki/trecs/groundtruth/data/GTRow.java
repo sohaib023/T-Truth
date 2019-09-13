@@ -31,7 +31,7 @@ public class GTRow extends GTElement implements Comparable {
 
 	@Override
 	public Color getForegroundColor() {
-		return Color.green;
+		return new Color(75, 255, 50);
 	}
 
 	@Override
