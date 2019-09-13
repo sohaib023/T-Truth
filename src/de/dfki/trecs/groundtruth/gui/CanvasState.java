@@ -38,6 +38,7 @@ import net.sourceforge.jiu.color.promotion.PromotionRGB48;
 import net.sourceforge.jiu.data.MemoryRGB48Image;
 import net.sourceforge.jiu.data.PixelImage;
 import net.sourceforge.jiu.data.RGB48Image;
+import net.sourceforge.jiu.gui.awt.ToolkitLoader;
 import net.sourceforge.jiu.ops.ImageToImageOperation;
 
 /**
@@ -101,8 +102,11 @@ public class CanvasState implements MenuIndexConstants {
 	 * The default interpolation type, one of the three INTERPOLATION_xyz constants.
 	 */
 	public static final int DEFAULT_INTERPOLATION = INTERPOLATION_NEAREST_NEIGHBOR;
-	private String currentDirectory;
-	private String fileName;
+	private String imageDirectory;
+	private ArrayList<String> imageList;
+	private String xmlDirectory;
+	private ArrayList<String> xmlList;
+	private String currentFileName;
 	private PixelImage currentImage;
 	private MemoryRGB48Image rgb48Image = null;
 	private int interpolation;
@@ -163,6 +167,8 @@ public class CanvasState implements MenuIndexConstants {
 		zoomFactorY = 1.0;
 		zoomToFit = false;
 		interpolation = 0;
+		this.xmlDirectory = null;
+		this.imageDirectory = null;
 	}
 
 	public void clear() {
@@ -192,7 +198,7 @@ public class CanvasState implements MenuIndexConstants {
 		interpolation = 0;
 
 		// currentDirectory = null;
-		fileName = null;
+//		currentFileName = null;
 		drawing = false;
 
 		rgb48Image = null;
@@ -248,13 +254,6 @@ public class CanvasState implements MenuIndexConstants {
 
 	}
 
-	/**
-	 * Returns the current directory. This directory will be used when file dialogs
-	 * are opened.
-	 */
-	public String getCurrentDirectory() {
-		return currentDirectory;
-	}
 
 	/**
 	 * @return the currentElement
@@ -274,7 +273,7 @@ public class CanvasState implements MenuIndexConstants {
 	 * Returns the name of the file from which the current image was loaded.
 	 */
 	public String getFileName() {
-		return fileName;
+		return currentFileName;
 	}
 
 	/**
@@ -562,7 +561,6 @@ public class CanvasState implements MenuIndexConstants {
 
 	public void markRowColSpan() {
 		markType = MARK_ROW_COL_SPAN;
-		currentTable = null;
 		currentElement = null;
 		int index = 1;
 		for(GTTable table: this.getTables()) {
@@ -574,7 +572,6 @@ public class CanvasState implements MenuIndexConstants {
 	public void markRowColumns() {
 		markType = MARK_ROW_COL;
 		currentElement = null;
-		currentTable = null;
 	}
 
 	public void markTable() {
@@ -617,7 +614,7 @@ public class CanvasState implements MenuIndexConstants {
 	 */
 	public void saveGroundTruthFile(File f) {
 		XMLManager xmlManager = new XMLManager("GroundTruth", false);
-		xmlManager.getDocument().getDocumentElement().setAttribute("InputFile", fileName);
+		xmlManager.getDocument().getDocumentElement().setAttribute("InputFile", currentFileName);
 		Node tablesNode = xmlManager.createElement(xmlManager.getDocument(), "Tables");
 		xmlManager.getDocument().getDocumentElement().appendChild(tablesNode);
 		for (GTTable table : tables) {
@@ -688,16 +685,6 @@ public class CanvasState implements MenuIndexConstants {
 	}
 
 	/**
-	 * Sets a new current directory.
-	 * 
-	 * @param newCurrentDirectory the directory to be used as current directory from
-	 *                            now on
-	 */
-	public void setCurrentDirectory(String newCurrentDirectory) {
-		currentDirectory = newCurrentDirectory;
-	}
-
-	/**
 	 * @param currentElement the currentElement to set
 	 */
 	public void setCurrentElement(GTElement currentElement) {
@@ -726,7 +713,7 @@ public class CanvasState implements MenuIndexConstants {
 	 * @param newFileName new name of the current file
 	 */
 	public void setFileName(String newFileName) {
-		fileName = newFileName;
+		currentFileName = newFileName;
 	}
 
 	public void setImage(PixelImage image, boolean flag) {
@@ -886,5 +873,87 @@ public class CanvasState implements MenuIndexConstants {
 
 	public void setRgb48Image(MemoryRGB48Image rgb48Image) {
 		this.rgb48Image = rgb48Image;
+	}
+
+	public String getImageDirectory() {
+		return imageDirectory;
+	}
+
+	public void setImageDirectory(String imageDirectory) {
+		this.imageDirectory = imageDirectory;
+		this.imageList = new ArrayList<String>();
+
+
+		File[] files = new File(this.imageDirectory).listFiles();
+
+		for (File file : files) {
+		    if (file.isFile() && (
+		    		file.getName().toLowerCase().endsWith("png") ||
+		    		file.getName().toLowerCase().endsWith("jpg") ||
+		    		file.getName().toLowerCase().endsWith("jpeg")
+		    				)) {
+		        this.imageList.add(file.getName());
+		    }
+		}
+		this.imageList.sort(String::compareToIgnoreCase);
+		this.setFileName(null);
+	}
+
+	public String getXmlDirectory() {
+		return xmlDirectory;
+	}
+
+	public void setXmlDirectory(String xmlDirectory) {
+		this.xmlDirectory = xmlDirectory;
+		this.xmlList = new ArrayList<String>();
+
+
+		File[] files = new File(this.xmlDirectory).listFiles();
+
+		for (File file : files) {
+		    if (file.isFile() && file.getName().toLowerCase().endsWith("xml")) {
+		        this.xmlList.add(file.getName());
+		    }
+		}
+	}
+
+	public void nextImage() {
+		if (imageList == null || this.imageList.size() == 0)
+			return;
+
+		String filename = null;
+		
+		if (!this.imageList.contains(this.currentFileName))
+			filename = this.imageList.get(0);
+		else {
+			int idx = this.imageList.indexOf(this.currentFileName) + 1;
+			if (idx < this.imageList.size())
+				filename = this.imageList.get(idx);
+			else
+				filename = this.currentFileName;
+		}
+
+		this.clear();
+		this.currentFileName = filename;
+	}
+
+	public void previousImage() {
+		if (imageList == null || this.imageList.size() == 0)
+			return;
+
+		String filename = null;
+		
+		if (!this.imageList.contains(this.currentFileName))
+			filename = this.imageList.get(0);
+		else {
+			int idx = this.imageList.indexOf(this.currentFileName) - 1;
+			if (idx >= 0)
+				filename = this.imageList.get(idx);
+			else
+				filename = this.currentFileName;
+		}
+		
+		this.clear();
+		this.currentFileName = filename;
 	}
 }

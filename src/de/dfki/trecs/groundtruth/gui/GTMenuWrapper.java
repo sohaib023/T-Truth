@@ -113,8 +113,8 @@ public class GTMenuWrapper implements MenuIndexConstants {
 		Menu fileMenu = new Menu(menuLabels[MenuIndexConstants.FILE]);
 		items[MenuIndexConstants.FILE] = fileMenu;
 
-		fileMenu.add(items[MenuIndexConstants.FILE_OPEN]);
-		fileMenu.add(items[MenuIndexConstants.OPEN_GT_FILE]);
+		fileMenu.add(items[MenuIndexConstants.FILE_OPEN_DIR]);
+		fileMenu.add(items[MenuIndexConstants.OPEN_GT_DIR]);
 		// fileMenu.add(items[MenuIndexConstants.FILE_SAVE]);
 		// fileMenu.add(items[MenuIndexConstants.FILE_SAVE_AS]);
 		fileMenu.add(items[MenuIndexConstants.SAVE_GT_FILE]);
@@ -146,7 +146,7 @@ public class GTMenuWrapper implements MenuIndexConstants {
 
 	private MenuShortcut createMenuShortcut(int menuIndex) {
 		switch (menuIndex) {
-		case (MenuIndexConstants.FILE_OPEN):
+		case (MenuIndexConstants.FILE_OPEN_DIR):
 			return new MenuShortcut(KeyEvent.VK_O);
 		case (MenuIndexConstants.UNDO):
 			return new MenuShortcut(KeyEvent.VK_Z);
@@ -168,7 +168,7 @@ public class GTMenuWrapper implements MenuIndexConstants {
 			return new MenuShortcut(KeyEvent.VK_G);
 		case (MenuIndexConstants.SAVE_GT_FILE):
 			return new MenuShortcut(KeyEvent.VK_S);
-		case (MenuIndexConstants.OPEN_GT_FILE):
+		case (MenuIndexConstants.OPEN_GT_DIR):
 			return new MenuShortcut(KeyEvent.VK_L);
 		default:
 			return null;

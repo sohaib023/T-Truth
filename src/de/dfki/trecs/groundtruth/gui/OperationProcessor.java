@@ -24,6 +24,8 @@ public abstract class OperationProcessor implements MenuIndexConstants{
 	 */
 	public abstract void fileOpen(String uri);
 	
+	public abstract void openImageDirectory();
+	
 	/**
 	 * close the file currently open in the applicaiton.
 	 */
@@ -44,7 +46,8 @@ public abstract class OperationProcessor implements MenuIndexConstants{
 	public abstract void fileSaveAs();
 	
 	public abstract void saveGroundTruthFile();
-	
+
+	public abstract void openGroundTruthDirectory();
 	public abstract void openGroundTruthFile(String uri);
 	public abstract void undo();
 	public abstract void redo();
@@ -54,11 +57,11 @@ public abstract class OperationProcessor implements MenuIndexConstants{
 	public abstract void markRowColumns();
 	public void process(int index){
 		switch (index){
-		case MenuIndexConstants.FILE_OPEN:
-			fileOpen(null);
+		case MenuIndexConstants.FILE_OPEN_DIR:
+			openImageDirectory();
 			break;
-		case MenuIndexConstants.OPEN_GT_FILE:
-			openGroundTruthFile(null);
+		case MenuIndexConstants.OPEN_GT_DIR:
+			openGroundTruthDirectory();
 			break;
 		case MenuIndexConstants.FILE_CLOSE:
 			fileClose();

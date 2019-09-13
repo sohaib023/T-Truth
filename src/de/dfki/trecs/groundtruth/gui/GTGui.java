@@ -502,64 +502,89 @@ public class GTGui extends Frame implements ActionListener, ComponentListener, K
 
 	}
 
-	public void nextImagePreview() {
-		if (files != null)
-			if (currentFileIndex < files.length - 1) {
-				currentFileIndex++;
-				String imgFile = files[currentFileIndex];
-				processor.fileOpen(new File(state.getCurrentDirectory(), imgFile).getAbsolutePath());
-			} else
-				showWarningBox("Last Image");
-	}
-
-	private void previousImagePreview() {
-		if (files != null)
-			if (currentFileIndex >= 1) {
-				currentFileIndex--;
-				String imgFile = files[currentFileIndex];
-				processor.fileOpen(new File(state.getCurrentDirectory(), imgFile).getAbsolutePath());
-			} else
-				showWarningBox("First Image");
-	}
-
 	@Override
 	public void keyPressed(KeyEvent e) {
-		if (previewMode) {
-			switch (e.getKeyChar()) {
-			case 'n':
-			case 'N':
-				nextImagePreview();
-				break;
-			case 'p':
-			case 'P':
-				previousImagePreview();
-				break;
-			}
-		}
-		else {
-			if (e.getKeyCode() == KeyEvent.VK_DELETE) {
-				GTTable table = state.getCurrentTable();
-				if (table!=null) {
-					if(state.getMarkType() == CanvasState.MARK_TABLE) {
-						state.removeGTTable(table);
-						state.setCurrentTable(null);
-						canvas.repaint();						
+//		if (previewMode) {
+//			switch (e.getKeyChar()) {
+//			case 'n':
+//			case 'N':
+//				nextImagePreview();
+//				break;
+//			case 'p':
+//			case 'P':
+//				previousImagePreview();
+//				break;
+//			}
+//		}
+//		else {
+		switch(e.getKeyCode()) {
+		case KeyEvent.VK_DELETE:
+			GTTable table = state.getCurrentTable();
+			if (table!=null) {
+				if(state.getMarkType() == CanvasState.MARK_TABLE) {
+					state.removeGTTable(table);
+					state.setCurrentTable(null);
+					canvas.repaint();						
+				}
+				else if(state.getCurrentElement()!=null){
+					if (state.getMarkType() == CanvasState.MARK_ROW_COL) {
+						table.remove(state.getCurrentElement());
+						state.setCurrentElement(null);
 					}
-					else if(state.getCurrentElement()!=null){
-						if (state.getMarkType() == CanvasState.MARK_ROW_COL) {
-							table.remove(state.getCurrentElement());
-							state.setCurrentElement(null);
-						}
-						else if (state.getMarkType() == CanvasState.MARK_ROW_COL_SPAN) {
-							table.removeSpan(state.getCurrentElement());
-							state.setCurrentElement(null);
-						}
-						canvas.repaint();
+					else if (state.getMarkType() == CanvasState.MARK_ROW_COL_SPAN) {
+						table.removeSpan(state.getCurrentElement());
+						state.setCurrentElement(null);
 					}
+					canvas.repaint();
 				}
 			}
+			break;
+		case KeyEvent.VK_LEFT:
+		case KeyEvent.VK_RIGHT:
+			this.changeImage(e.getKeyCode());
+			break;
+//			}
 		}
+	}
 
+	public void changeImage(int key) {
+		if(state.getImageDirectory() == null) {
+			this.showWarningBox("Select image directory.");
+			processor.openImageDirectory();
+		}
+		if(state.getXmlDirectory() == null) {
+			this.showWarningBox("Select ground truth directory.");
+			processor.openGroundTruthDirectory();
+		}
+		if(state.getFileName() != null && new File(state.getImageDirectory(), state.getFileName()).exists()) {
+			this.processor.saveGroundTruthFile();
+		}
+		
+		String fn = state.getFileName();
+		if(key == KeyEvent.VK_LEFT)
+			state.previousImage();
+		else
+			state.nextImage();
+		
+		if(state.getFileName() == null)
+			return;
+
+		if(state.getFileName().equals(fn)){
+			if(key == KeyEvent.VK_LEFT)
+				this.showWarningBox("First Image");
+			else if(key == KeyEvent.VK_RIGHT)
+				this.showWarningBox("Last Image");
+		}
+		
+		this.processor.fileOpen(new File(state.getImageDirectory(), state.getFileName()).getAbsolutePath());
+		this.processor.openGroundTruthFile(
+				new File(
+				state.getXmlDirectory(), 
+				state.getFileName().substring(0,state.getFileName().lastIndexOf(".")) + ".xml"
+				).getAbsolutePath()
+				);
+		
+		this.canvas.requestFocusInWindow();
 	}
 
 	@Override
@@ -626,10 +651,10 @@ public class GTGui extends Frame implements ActionListener, ComponentListener, K
 		} else if (args.length == 2) {
 			if (args[0].equalsIgnoreCase("preview")) {
 				gui.setWorkDir(args[1]);
-				state.setCurrentDirectory(args[1]);
+				state.setImageDirectory(args[1]);
 				state.setAutoLoadGT(true);
 				gui.previewMode();
-				gui.nextImagePreview();
+//				gui.nextImagePreview();
 
 			}
 		}

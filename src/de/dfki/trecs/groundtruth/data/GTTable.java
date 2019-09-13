@@ -183,21 +183,54 @@ public class GTTable extends GTElement {
 			GTCell cell = iterator.next();
 			gtCells[cell.getStartRow()][cell.getStartCol()] = cell;
 		}
+		int[] rowCenters = new int[this.gtRows.size() + 1];
+		int[] colCenters = new int[this.gtCols.size() + 1];
+
+		if(this.gtRows.size() == 0) {
+			rowCenters[0] = (this.getY0() + this.getY1())/2;
+		}
+		else {
+			for(int i=0; i < this.gtRows.size() + 1; i++) {
+				if(i == 0)
+					rowCenters[i] = (this.gtRows.get(i).getY0() + this.getY0())/2;
+				else if (i == this.gtRows.size())
+					rowCenters[i] = (this.gtRows.get(i - 1).getY0() + this.getY1())/2;
+				else
+					rowCenters[i] = (this.gtRows.get(i).getY0() + this.gtRows.get(i - 1).getY0())/2;
+			}
+		}
+		
+		if(this.gtCols.size() == 0) {
+			colCenters[0] = (this.getX0() + this.getX1())/2;
+		}
+		else {
+			for(int i=0; i < this.gtCols.size() + 1; i++) {
+				if(i == 0)
+					colCenters[i] = (this.gtCols.get(i).getX0() + this.getX0())/2;
+				else if (i == this.gtCols.size())
+					colCenters[i] = (this.gtCols.get(i - 1).getX0() + this.getX1())/2;
+				else 
+					colCenters[i] = (this.gtCols.get(i).getX0() + this.gtCols.get(i - 1).getX0())/2;
+			}
+		}
 		for (int i = 0; i < numRows; i++)
 			for (int j = 0; j < numCols; j++) {
 				GTCell cell = gtCells[i][j];
 				if(!cell.isDontCare()) {
 					if(cell.getStartCol() != cell.getEndCol()) {
+						cell.setX1(gtCells[i][j + 1].getX0());
 						for(int i1=cell.getStartRow(); i1 < cell.getEndRow() + 1; i1++) {
-							GTCell cell1 = gtCells[i1][cell.getStartCol()];
-							GTCell cell2 = gtCells[i1][cell.getEndCol()];
-							this.gtSpans.add(new GTRow(cell1.getX0() + 1, cell2.getCenter().y, cell2.getX1() - 1));
+							int y1 = rowCenters[i1];
+							int x1 = colCenters[cell.getStartCol()];
+							int x2 = colCenters[cell.getEndCol()];
+							this.gtSpans.add(new GTRow(x1, y1, x2));
 						}
 					}
 					if(cell.getStartRow() != cell.getEndRow()) {
-						GTCell cell1 = gtCells[cell.getStartRow()][cell.getStartCol()];
-						GTCell cell2 = gtCells[cell.getEndRow()][cell.getStartCol()];
-						this.gtSpans.add(new GTCol(cell2.getCenter().x, cell1.getY0() + 1, cell2.getY1() - 1));
+						int x1 = colCenters[cell.getStartCol()];
+						int y1 = rowCenters[cell.getStartRow()];
+						int y2 = rowCenters[cell.getEndRow()];
+						this.gtSpans.add(new GTCol(x1, y1, y2));
 					}
 				}
 			}

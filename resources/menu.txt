@@ -1,5 +1,5 @@
 File
-Open Image
+Open Image Directory
 Save
 Save As
 Close
@@ -16,5 +16,5 @@ Undo
 Redo
 View
 Save Ground Truth
-Open Ground Truth
+Open Ground Truth Directory
 Mark Orientation

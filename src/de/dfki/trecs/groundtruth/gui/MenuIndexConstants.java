@@ -12,7 +12,7 @@ package de.dfki.trecs.groundtruth.gui;
 public interface MenuIndexConstants {
 
 	int FILE = 0;
-	int FILE_OPEN = 1;
+	int FILE_OPEN_DIR = 1;
 	int FILE_SAVE = 2;
 	int FILE_SAVE_AS = 3;
 	int FILE_CLOSE = 4;
@@ -28,7 +28,7 @@ public interface MenuIndexConstants {
 	int REDO = 15;
 	int VIEW = 16;
 	int SAVE_GT_FILE = 17;
-	int OPEN_GT_FILE = 18;
+	int OPEN_GT_DIR = 18;
 	int MARK_ORIENTATION = 19;
 	int NUM_CONSTANTS = 20;
 
