@@ -202,7 +202,7 @@ public class CanvasState implements MenuIndexConstants {
 		drawing = false;
 
 		rgb48Image = null;
-		markType = CanvasState.MARK_NONE;
+		markType = CanvasState.MARK_TABLE;
 
 	}
 
@@ -742,7 +742,7 @@ public class CanvasState implements MenuIndexConstants {
 	public boolean isModified() {
 		for(GTTable table: this.getTables())
 			if(table.isModified())
-				return table.isModified();
+				return true;
 		return modified;
 	}
 
@@ -907,9 +907,10 @@ public class CanvasState implements MenuIndexConstants {
 		    }
 		}
 		imageArray.sort(String::compareToIgnoreCase);
-		
-		for(String file: imageArray)
-			this.imageList.addElement(file);
+
+		this.imageList.addAll(imageArray);
+//		for(String file: imageArray)
+//			this.imageList.addElement(file);
 		
 		this.setFileName(null);
 	}
@@ -922,9 +923,9 @@ public class CanvasState implements MenuIndexConstants {
 		this.xmlDirectory = xmlDirectory;
 	}
 
-	public void nextImage() {
+	public String nextImage() {
 		if (imageList == null || this.imageList.size() == 0)
-			return;
+			return null;
 
 		String filename = null;
 		
@@ -938,13 +939,12 @@ public class CanvasState implements MenuIndexConstants {
 				filename = this.currentFileName;
 		}
 
-		this.clear();
-		this.currentFileName = filename;
+		return filename;
 	}
 
-	public void previousImage() {
+	public String previousImage() {
 		if (imageList == null || this.imageList.size() == 0)
-			return;
+			return null;
 
 		String filename = null;
 		
@@ -958,8 +958,7 @@ public class CanvasState implements MenuIndexConstants {
 				filename = this.currentFileName;
 		}
 		
-		this.clear();
-		this.currentFileName = filename;
+		return filename;
 	}
 	
 	public DefaultListModel<String> getImageList() {

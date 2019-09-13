@@ -72,7 +72,7 @@ public class GTGui extends Frame implements ActionListener, ComponentListener, K
 	private JLabel statusBar;
 	private JLabel helpBar;
 	private JLabel infoBar;
-//	private JList<String> imgList; 
+	public JList<String> imgList; 
 	
 	private boolean previewMode = false;
 
@@ -150,20 +150,18 @@ public class GTGui extends Frame implements ActionListener, ComponentListener, K
 		statusBar.setFont(new Font("Arial", Font.BOLD, 20));
 		helpBar.setFont(new Font("Arial", Font.PLAIN, 12));
 		
-//        imgList = new JList<String>(state.getImageList());
-//        imgList.addListSelectionListener(new ListSelectionListener() {
-//            @Override
-//            public void valueChanged(ListSelectionEvent arg0) {
-//                if (!arg0.getValueIsAdjusting()) {
-//                	closeImage();
-//                	state.setFileName(imgList.getSelectedValue().toString());
-//                	loadImage();
-//                }
-//            }
-//        });
-//        imgList.setVisibleRowCount(7);
-//        imgList.setPrototypeCellValue("2010PRODUCTS_03292019_2_Page_08");
-//        JScrollPane listPane = new JScrollPane(imgList);
+        imgList = new JList<String>(state.getImageList());
+        imgList.addListSelectionListener(new ListSelectionListener() {
+            @Override
+            public void valueChanged(ListSelectionEvent arg0) {
+                if (!arg0.getValueIsAdjusting()) {
+                	imgListCallback();
+                }
+            }
+        });
+        imgList.setVisibleRowCount(7);
+        imgList.setPrototypeCellValue("2010PRODUCTS_03292019_2_Page_08");
+        JScrollPane listPane = new JScrollPane(imgList);
         
 		addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent e) {
@@ -178,7 +176,7 @@ public class GTGui extends Frame implements ActionListener, ComponentListener, K
 	    p.setLayout(new BorderLayout());
 		p.add(statusBar, BorderLayout.NORTH);
 		p.add(helpBar, BorderLayout.WEST);
-//		add(listPane, BorderLayout.WEST);
+		add(listPane, BorderLayout.WEST);
 		add(p, BorderLayout.NORTH);
 		add(infoBar, BorderLayout.SOUTH);
 
@@ -201,6 +199,15 @@ public class GTGui extends Frame implements ActionListener, ComponentListener, K
 //		repaint();
 //		setVisible(true);
 
+	}
+
+	private void imgListCallback() {
+		if(state.getImageList().size() == 0 || this.imgList.getSelectedValue() == null)
+			return;
+    	closeImage();
+		this.state.clear();
+    	this.state.setFileName(this.imgList.getSelectedValue().toString());
+    	loadImage();		
 	}
 
 	/**
@@ -602,9 +609,11 @@ public class GTGui extends Frame implements ActionListener, ComponentListener, K
 			break;
 		case KeyEvent.VK_LEFT:
 		case KeyEvent.VK_RIGHT:
-			this.closeImage();
-			if(	this.changeImage(e.getKeyCode()))
-				this.loadImage();
+//			this.closeImage();
+			String fn = this.changeImage(e.getKeyCode());
+			if(fn != null)
+				this.imgList.setSelectedIndex(state.getImageList().indexOf(fn));
+//				this.loadImage();
 			break;
 //			}
 		}
@@ -637,28 +646,28 @@ public class GTGui extends Frame implements ActionListener, ComponentListener, K
 				);
 
 		this.markTable();
-//		this.imgList.setSelectedIndex(state.getImageList().indexOf(state.getFileName()));
 		this.canvas.requestFocusInWindow();
 	}
 	
-	public boolean changeImage(int key) {
+	public String changeImage(int key) {
 		String fn = state.getFileName();
+		String fn2 = null;
 		if(key == KeyEvent.VK_LEFT)
-			state.previousImage();
+			fn2 = state.previousImage();
 		else if(key == KeyEvent.VK_RIGHT)
-			state.nextImage();
+			fn2 = state.nextImage();
 		
-		if(state.getFileName() == null)
-			return false;
+		if(fn2 == null)
+			return null;
 
-		if(state.getFileName().equals(fn)){
+		if(fn2.equals(fn)){
 			if(key == KeyEvent.VK_LEFT)
 				this.showWarningBox("First Image");
 			else if(key == KeyEvent.VK_RIGHT)
 				this.showWarningBox("Last Image");
-			return false;
+			return null;
 		}
-		return true;
+		return fn2;
 	}
 
 	@Override

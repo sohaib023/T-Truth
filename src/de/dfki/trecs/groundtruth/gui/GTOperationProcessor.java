@@ -60,13 +60,14 @@ public class GTOperationProcessor extends OperationProcessor{
 		int returnVal = chooser.showOpenDialog(frame);
 		if(returnVal == JFileChooser.APPROVE_OPTION) {
 			File imgDir = chooser.getSelectedFile();
+			state.clear();
+			frame.getCanvas().clear();
+			frame.updateImage();
 			if(imgDir.isDirectory())
 				state.setImageDirectory(imgDir.getAbsolutePath());
 		}				
 		if(moveNext) {
-			this.frame.closeImage();
-			if(this.frame.changeImage(KeyEvent.VK_RIGHT))
-				this.frame.loadImage();
+			this.frame.imgList.setSelectedIndex(0);
 		}
 	}
 	
@@ -116,16 +117,9 @@ public class GTOperationProcessor extends OperationProcessor{
 		if(returnVal == JFileChooser.APPROVE_OPTION) {
 			File xmlDir = chooser.getSelectedFile();
 			if(xmlDir.isDirectory()){
+				state.clear();
 				state.setXmlDirectory(xmlDir.getAbsolutePath());
-				if(state.getImageDirectory() != null &&
-						state.getFileName() != null &&
-						new File(state.getImageDirectory(), state.getFileName()).exists())
-					this.openGroundTruthFile(
-							new File(
-							state.getXmlDirectory(), 
-							state.getFileName().substring(0,state.getFileName().lastIndexOf(".")) + ".xml"
-							).getAbsolutePath()
-							);
+				frame.loadImage();
 			}
 		}
 	}
