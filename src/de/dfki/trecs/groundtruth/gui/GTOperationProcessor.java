@@ -60,8 +60,10 @@ public class GTOperationProcessor extends OperationProcessor{
 			if(imgDir.isDirectory())
 				state.setImageDirectory(imgDir.getAbsolutePath());
 		}				
-		if(moveNext)
+		if(moveNext) {
 			this.frame.changeImage(KeyEvent.VK_RIGHT);
+			this.frame.loadImage();
+		}
 	}
 	
 	@Override

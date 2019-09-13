@@ -32,6 +32,9 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 import de.dfki.trecs.groundtruth.data.GTCol;
 import de.dfki.trecs.groundtruth.data.GTRow;
@@ -148,7 +151,20 @@ public class GTGui extends Frame implements ActionListener, ComponentListener, K
 		helpBar.setFont(new Font("Arial", Font.PLAIN, 15));
 		
 //        imgList = new JList<String>(state.getImageList());
-		
+//        imgList.addListSelectionListener(new ListSelectionListener() {
+//            @Override
+//            public void valueChanged(ListSelectionEvent arg0) {
+//                if (!arg0.getValueIsAdjusting()) {
+//                	closeImage();
+//                	state.setFileName(imgList.getSelectedValue().toString());
+//                	loadImage();
+//                }
+//            }
+//        });
+//        imgList.setVisibleRowCount(7);
+//        imgList.setPrototypeCellValue("2010PRODUCTS_03292019_2_Page_08");
+//        JScrollPane listPane = new JScrollPane(imgList);
+        
 		addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent e) {
 				processor.exit();
@@ -161,9 +177,9 @@ public class GTGui extends Frame implements ActionListener, ComponentListener, K
 		JPanel p = new JPanel();
 	    p.setLayout(new BorderLayout());
 		p.add(statusBar, BorderLayout.NORTH);
-		p.add(helpBar, BorderLayout.SOUTH);
+		p.add(helpBar, BorderLayout.WEST);
+//		add(listPane, BorderLayout.WEST);
 		add(p, BorderLayout.NORTH);
-//		add(imgList, BorderLayout.WEST);
 		add(infoBar, BorderLayout.SOUTH);
 
 		logUser = Boolean.parseBoolean(System.getProperty(GTGui.LOG_USER, "false"));
@@ -569,13 +585,15 @@ public class GTGui extends Frame implements ActionListener, ComponentListener, K
 			break;
 		case KeyEvent.VK_LEFT:
 		case KeyEvent.VK_RIGHT:
-			this.changeImage(e.getKeyCode());
+			this.closeImage();
+			if(	this.changeImage(e.getKeyCode()))
+				this.loadImage();
 			break;
 //			}
 		}
 	}
 
-	public void changeImage(int key) {
+	public void closeImage() {
 		if(state.getImageDirectory() == null) {
 			this.showWarningBox("Select image directory.");
 			processor.openImageDirectory(false);
@@ -586,24 +604,12 @@ public class GTGui extends Frame implements ActionListener, ComponentListener, K
 		}
 		if(state.getFileName() != null && new File(state.getImageDirectory(), state.getFileName()).exists()) {
 			this.processor.saveGroundTruthFile();
-		}
-		
-		String fn = state.getFileName();
-		if(key == KeyEvent.VK_LEFT)
-			state.previousImage();
-		else
-			state.nextImage();
-		
+		}		
+	}
+	
+	public void loadImage() {
 		if(state.getFileName() == null)
 			return;
-
-		if(state.getFileName().equals(fn)){
-			if(key == KeyEvent.VK_LEFT)
-				this.showWarningBox("First Image");
-			else if(key == KeyEvent.VK_RIGHT)
-				this.showWarningBox("Last Image");
-			return;
-		}
 		
 		this.processor.fileOpen(new File(state.getImageDirectory(), state.getFileName()).getAbsolutePath());
 		this.processor.openGroundTruthFile(
@@ -612,9 +618,30 @@ public class GTGui extends Frame implements ActionListener, ComponentListener, K
 				state.getFileName().substring(0,state.getFileName().lastIndexOf(".")) + ".xml"
 				).getAbsolutePath()
 				);
-		
+
+		this.markTable();
 //		this.imgList.setSelectedIndex(state.getImageList().indexOf(state.getFileName()));
 		this.canvas.requestFocusInWindow();
+	}
+	
+	public boolean changeImage(int key) {
+		String fn = state.getFileName();
+		if(key == KeyEvent.VK_LEFT)
+			state.previousImage();
+		else if(key == KeyEvent.VK_RIGHT)
+			state.nextImage();
+		
+		if(state.getFileName() == null)
+			return false;
+
+		if(state.getFileName().equals(fn)){
+			if(key == KeyEvent.VK_LEFT)
+				this.showWarningBox("First Image");
+			else if(key == KeyEvent.VK_RIGHT)
+				this.showWarningBox("Last Image");
+			return false;
+		}
+		return true;
 	}
 
 	@Override
