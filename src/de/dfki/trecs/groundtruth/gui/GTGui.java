@@ -146,9 +146,9 @@ public class GTGui extends Frame implements ActionListener, ComponentListener, K
 		statusBar = new JLabel("Loaded ");
 		infoBar = new JLabel("");
 		helpBar = new JLabel("");
-		infoBar.setFont(new Font("Arial", Font.PLAIN, 20));
-		statusBar.setFont(new Font("Arial", Font.BOLD, 30));
-		helpBar.setFont(new Font("Arial", Font.PLAIN, 15));
+		infoBar.setFont(new Font("Arial", Font.PLAIN, 15));
+		statusBar.setFont(new Font("Arial", Font.BOLD, 20));
+		helpBar.setFont(new Font("Arial", Font.PLAIN, 12));
 		
 //        imgList = new JList<String>(state.getImageList());
 //        imgList.addListSelectionListener(new ListSelectionListener() {
@@ -238,6 +238,11 @@ public class GTGui extends Frame implements ActionListener, ComponentListener, K
 	}
 	
 	public void markOrientation() {
+		if(state.getTables().size()==0) {
+			this.showWarningBox("Please mark TABLES before marking ORIENTATION.");
+			this.markTable();
+			return;
+		}
 		state.markOrientation();
 		canvas.repaint();
 		updateStatusBar();
@@ -424,6 +429,9 @@ public class GTGui extends Frame implements ActionListener, ComponentListener, K
 					+ "-Click on a table to select it.<br>"
 					+ tab + "-Drag any of the yellow-highlighted corners to resize the table.<br>"
 					+ tab + "-Press DELETE key to remove the table.<br>"
+					+ "<br>"
+					+ "RIGHT ARROW KEY - Save & Move to next image.<br>"
+					+ "LEFT ARROW KEY - Save & Move to previous image.<br>"
 					+ "</html";
 			break;
 		case CanvasState.MARK_ROW_COL:
@@ -434,6 +442,9 @@ public class GTGui extends Frame implements ActionListener, ComponentListener, K
 					+ tab + "-Press RIGHT Mouse Button inside the table to mark a COLUMN.<br>"
 					+ tab + "-Click on an existing Row/Column to select it (Selected element will be highlighted yellow).<br>"
 					+ tab + tab + "-Press DELETE key to remove the Row/Column.<br>"
+					+ "<br>"
+					+ "RIGHT ARROW KEY - Save & Move to next image.<br>"
+					+ "LEFT ARROW KEY - Save & Move to previous image.<br>"
 					+ "</html";
 			break;
 		case CanvasState.MARK_ROW_COL_SPAN:
@@ -444,6 +455,9 @@ public class GTGui extends Frame implements ActionListener, ComponentListener, K
 					+ tab + "-Press RIGHT Mouse Button and drag mouse to mark a COLUMN Span (merge vertically adjacent cells).<br>"
 					+ tab + "-Click on an existing Row/Column Span to select it (Selected element will be highlighted yellow).<br>"
 					+ tab + tab + "-Press DELETE key to remove the Row/Column Span (split up the cells).<br>"
+					+ "<br>"
+					+ "RIGHT ARROW KEY - Save & Move to next image.<br>"
+					+ "LEFT ARROW KEY - Save & Move to previous image.<br>"
 					+ "</html";
 			break;
 		case CanvasState.MARK_ORIENTATION:
@@ -452,6 +466,9 @@ public class GTGui extends Frame implements ActionListener, ComponentListener, K
 					+ "-LEFT Click on a table to mark it as HORIZONTAL (be highlighted as RED)<br>"
 					+ "-RIGHT Click on a table to mark it as VERTICAL (highlighted as GREEN)<br>"
 					+ "-Unmarked tables will be highlighted as BLUE<br>"
+					+ "<br>"
+					+ "RIGHT ARROW KEY - Save & Move to next image.<br>"
+					+ "LEFT ARROW KEY - Save & Move to previous image.<br>"
 					+ "</html";
 			break;
 

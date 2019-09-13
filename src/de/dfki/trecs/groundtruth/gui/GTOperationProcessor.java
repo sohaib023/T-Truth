@@ -38,6 +38,9 @@ public class GTOperationProcessor extends OperationProcessor{
 	@Override
 	public void saveGroundTruthFile() {	
 		String dn = state.getXmlDirectory();
+		if(state.getFileName() == null)
+			return;
+		
 		String fn = state.getFileName().substring(0, state.getFileName().lastIndexOf('.')) + ".xml";
 		
 		if (fn == null || dn == null || state.isModified() == false)
@@ -61,8 +64,9 @@ public class GTOperationProcessor extends OperationProcessor{
 				state.setImageDirectory(imgDir.getAbsolutePath());
 		}				
 		if(moveNext) {
-			this.frame.changeImage(KeyEvent.VK_RIGHT);
-			this.frame.loadImage();
+			this.frame.closeImage();
+			if(this.frame.changeImage(KeyEvent.VK_RIGHT))
+				this.frame.loadImage();
 		}
 	}
 	
