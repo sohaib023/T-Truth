@@ -193,16 +193,16 @@ public class CanvasState implements MenuIndexConstants {
 
 	private void clearData() {
 
-		zoomToFit = false;
-		setZoomFactors(1.0, 1.0);
-		interpolation = 0;
+//		zoomToFit = false;
+//		setZoomFactors(1.0, 1.0);
+//		interpolation = 0;
 
 		// currentDirectory = null;
 //		currentFileName = null;
 		drawing = false;
 
 		rgb48Image = null;
-		markType = CanvasState.MARK_TABLE;
+//		markType = CanvasState.MARK_TABLE;
 
 	}
 

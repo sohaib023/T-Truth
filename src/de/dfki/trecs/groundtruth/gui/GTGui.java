@@ -645,7 +645,7 @@ public class GTGui extends Frame implements ActionListener, ComponentListener, K
 				).getAbsolutePath()
 				);
 
-		this.markTable();
+//		this.markTable();
 		this.canvas.requestFocusInWindow();
 	}
 	
