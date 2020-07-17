@@ -1,3 +1,6 @@
+# Link to original Dataset and Tool:
+http://tc11.cvc.uab.es/datasets/DFKI-TGT-2010_1
+
 # Launching T-Truth labelling tool:
 
     ./gtgui.sh
