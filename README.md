@@ -5,7 +5,7 @@
 
     ./gtgui.sh
 
-### Conversion of original xml ground truth to T-Truth compatible xml files
+### Conversion of labelImg ground truth to T-Truth compatible xml files
 
         usage: python xml_unlv_converter.py [-h] -i INPUT -o OUTPUT
 
