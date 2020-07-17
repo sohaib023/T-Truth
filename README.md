@@ -1,11 +1,11 @@
-# Link to original Dataset and Tool:
-http://tc11.cvc.uab.es/datasets/DFKI-TGT-2010_1
+### Cite this tool as:
+```Prof. Dr. Faisal Shafait, Table Ground Truth for the UW3 and UNLV datasets (DFKI-TGT-2010) ,1,ID:DFKI-TGT-2010_1,URL:http://tc11.cvc.uab.es/datasets/DFKI-TGT-2010_1```
 
-# Launching T-Truth labelling tool:
+### Launching T-Truth labelling tool:
 
     ./gtgui.sh
 
-# Conversion of original xml ground truth to T-Truth compatible xml files
+### Conversion of original xml ground truth to T-Truth compatible xml files
 
         usage: python xml_unlv_converter.py [-h] -i INPUT -o OUTPUT
 
@@ -17,7 +17,7 @@ http://tc11.cvc.uab.es/datasets/DFKI-TGT-2010_1
                                 path to store converted xml files.
 
 
-# Instructions for labelling images:
+### Instructions for labelling images:
 
     1- Open the image:
         - File -> Open Image
