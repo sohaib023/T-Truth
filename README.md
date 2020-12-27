@@ -1,3 +1,5 @@
+This repository contains code for second iteration of the labelling tool named T-Truth released under the following publication. The modifications include a major overhaul of the code, removing several major bugs and improving ease of use.
+
 ### Cite this tool as:
 ```Prof. Dr. Faisal Shafait, Table Ground Truth for the UW3 and UNLV datasets (DFKI-TGT-2010) ,1,ID:DFKI-TGT-2010_1,URL:http://tc11.cvc.uab.es/datasets/DFKI-TGT-2010_1```
 
@@ -45,18 +47,13 @@
         e- Press Ctrl-Z to undo an incorrectly marked seperator.
         f- Repeat the process until all rows and columns of all tables have been marked. (Only move to the next step once you've ensured it.)    
     5- Convert the row-column seperators into cell boxes and refine the cell boxes:
-        a- Edit -> Evaluate initial cells 
-            Note: Once this step is taken you cannot go back to adding/removing column or row seperators. 
         b- Select the Row/Column merging tool:
             - Edit -> Mark Row/Col Span
             or
             - Ctrl + M
-            (Make sure that this is done, otherwise it can cause problems)
         c- Click on a table to select it. (selected table will be highlighted).
         d- To mark two vertically adjacent cells as a single cell, press LEFT mouse button from the top cell and drag the mouse to the bottom cell.
         e- To mark two horizontally adjacent cells as a single cell, press RIGHT mouse button from the left cell and drag the mouse to the right cell.
-        f- In case if a mistake is made in merging the cells, repeat step 5.a to re-initialize the cells.
-        g- Once you are done with a given table press Ctrl + M to deselect the current table.
         h- Repeat the process for all the tables. (steps 5.c onwards)
     6- Save the ground-truth file:
         - File -> Save Ground Truth 
