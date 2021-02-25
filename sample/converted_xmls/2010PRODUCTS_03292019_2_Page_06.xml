@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<GroundTruth InputFile="C:\Users\msdevuser\Downloads\CleanTableTag-20190502T051347Z-001\CleanTableTag\2010PRODUCTS_03292019_2_Page_06.png">
-   <Tables>
-      <Table x0="85" x1="1311" y0="224" y1="696"/>
-      <Table x0="87" x1="1585" y0="812" y1="1196"/>
-      <Table x0="107" x1="1607" y0="1396" y1="1534"/>
-      <Table x0="111" x1="1607" y0="1824" y1="1960"/>
-   </Tables>
-</GroundTruth>
