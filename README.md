@@ -5,7 +5,13 @@ This repository contains code for second iteration of the labelling tool named T
 
 ### Launching T-Truth labelling tool:
 
+On bash run:
+
     ./gtgui.sh
+    
+On Windows run:
+
+    gtgui.bat
 
 ### Conversion of labelImg ground truth to T-Truth compatible xml files
 
